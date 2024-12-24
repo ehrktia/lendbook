@@ -1,0 +1,30 @@
+
+
+type Owner {
+  id : Float!
+  firstName: String!
+  lastName: String!
+  email: String!
+  active: Boolean!
+  books: [Book!]!
+  version: Int!
+}
+
+type Book {
+  id: Float!
+  title: String!
+  author: String!
+  edition: String!
+  available: Boolean!
+  ownerId: Float!
+  added: String
+  updated: String
+}
+
+
+type Query {
+  books: [Book!]!
+  bookByOwnerId(id: Float!): [Book!]!
+  owners: [Owner!]!
+  ownerById(id: Float!): Owner
+}
