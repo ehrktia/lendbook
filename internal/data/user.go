@@ -11,43 +11,43 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
-type OwnerRepo struct {
+type UserRepo struct {
 	connPool *pg.Postgres
 }
 
-func NewOwner(connPool *pg.Postgres) *OwnerRepo {
-	return &OwnerRepo{
+func NewUser(connPool *pg.Postgres) *UserRepo {
+	return &UserRepo{
 		connPool: connPool,
 	}
 }
 
 var ErrDuplicate = errors.New("duplicate data found in store")
 
-func (o OwnerRepo) GetById(
-	ctx context.Context, id float64) (Owner, error) {
+func (o UserRepo) GetById(
+	ctx context.Context, id float64) (User, error) {
 	reqCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	conn, err := o.connPool.GetConn(reqCtx)
 	if err != nil {
-		return Owner{}, err
+		return User{}, err
 	}
 	defer func() {
 		conn.Conn().Close(reqCtx)
 		conn.Release()
 	}()
-	qOwnerById := `select
+	qUserById := `select
 	*
 from
 	owner_with_books owb
 where
 	id = $1;`
-	rows, err := conn.Query(reqCtx, qOwnerById, id)
+	rows, err := conn.Query(reqCtx, qUserById, id)
 	if err != nil {
-		return Owner{}, errClassify(err)
+		return User{}, errClassify(err)
 	}
-	owner, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[Owner])
+	owner, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[User])
 	if err != nil {
-		return Owner{}, errClassify(err)
+		return User{}, errClassify(err)
 	}
 	if ctx.Err() != nil {
 		return owner, ctx.Err()
@@ -56,7 +56,7 @@ where
 	return owner, nil
 }
 
-func (o OwnerRepo) GetBookByOwnerId(
+func (o UserRepo) GetBookByUserId(
 	ctx context.Context, ownerId float64) ([]Book, error) {
 	conn, err := o.connPool.GetConn(ctx)
 	if err != nil {
@@ -66,8 +66,8 @@ func (o OwnerRepo) GetBookByOwnerId(
 		conn.Conn().Close(ctx)
 		conn.Release()
 	}()
-	queryBookByOwnerId := `select * from books where owner_id=$1`
-	rows, err := conn.Query(ctx, queryBookByOwnerId, ownerId)
+	queryBookByUserId := `select * from books where owner_id=$1`
+	rows, err := conn.Query(ctx, queryBookByUserId, ownerId)
 	if err != nil {
 		switch {
 		case errors.Is(err, pgx.ErrNoRows):
@@ -99,7 +99,7 @@ type BookList struct {
 	Updated   string `json:"updated"`
 }
 
-type Owner struct {
+type User struct {
 	ID        int64      `json:"id"`
 	FirstName string     `json:"firstName"`
 	LastName  string     `json:"lastName"`
@@ -109,7 +109,7 @@ type Owner struct {
 	Books     []BookList `json:"books"`
 }
 
-func (o OwnerRepo) GetOwners(ctx context.Context) ([]Owner, error) {
+func (o UserRepo) GetUsers(ctx context.Context) ([]User, error) {
 	reqCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	conn, err := o.connPool.GetConn(reqCtx)
@@ -120,15 +120,15 @@ func (o OwnerRepo) GetOwners(ctx context.Context) ([]Owner, error) {
 		conn.Conn().Close(reqCtx)
 		conn.Release()
 	}()
-	qGetOwnersBooks := `select
+	qGetUsersBooks := `select
 	*
 from
 	owner_with_books owb;`
-	rows, err := conn.Query(reqCtx, qGetOwnersBooks)
+	rows, err := conn.Query(reqCtx, qGetUsersBooks)
 	if err != nil {
 		return nil, errClassify(err)
 	}
-	owners, err := pgx.CollectRows(rows, pgx.RowToStructByName[Owner])
+	owners, err := pgx.CollectRows(rows, pgx.RowToStructByName[User])
 	if err != nil {
 		return nil, errClassify(err)
 	}
@@ -138,10 +138,10 @@ from
 	return owners, nil
 }
 
-var ErrCreateOwner = errors.New("can not create owner")
+var ErrCreateUser = errors.New("can not create owner")
 
-func (o OwnerRepo) Create(
-	ctx context.Context, owner Owner) (int64, error) {
+func (o UserRepo) Create(
+	ctx context.Context, owner User) (int64, error) {
 	var ownerId int64
 	reqCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -176,7 +176,7 @@ VALUES(@first_name, @last_name, @email, @active,@version) returning id;`
 	return ownerId, nil
 }
 
-type OwnerWithNoBooks struct {
+type UserWithNoBooks struct {
 	ID        int64  `json:"id"`
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
@@ -185,17 +185,17 @@ type OwnerWithNoBooks struct {
 	Version   int    `json:"version"`
 }
 
-func (owb OwnerWithNoBooks) String() string {
+func (owb UserWithNoBooks) String() string {
 	return fmt.Sprintf("%#v", owb)
 
 }
 
-func (o OwnerRepo) Update(
-	ctx context.Context, owner OwnerWithNoBooks) (OwnerWithNoBooks, error) {
+func (o UserRepo) Update(
+	ctx context.Context, owner UserWithNoBooks) (UserWithNoBooks, error) {
 	reqCtx, cancel := context.WithTimeoutCause(ctx,
 		3*time.Second, errors.New("request timed out "))
 	defer cancel()
-	ow := OwnerWithNoBooks{}
+	ow := UserWithNoBooks{}
 	conn, err := o.connPool.GetConn(reqCtx)
 	if err != nil {
 		return ow, errClassify(err)
@@ -226,7 +226,7 @@ where
 		if err != nil {
 			return err
 		}
-		ow, err = pgx.CollectOneRow(rows, pgx.RowToStructByName[OwnerWithNoBooks])
+		ow, err = pgx.CollectOneRow(rows, pgx.RowToStructByName[UserWithNoBooks])
 		return errClassify(err)
 	}
 	if err := pg.RuninTx(reqCtx, conn, f); err != nil {
@@ -270,7 +270,7 @@ func errClassify(err error) error {
 var ErrClosedTx = errors.New("tx is closed")
 var ErrTxRollBack = errors.New("tx commit rollback error")
 
-func (o OwnerRepo) GetOwnerByEmail(
+func (o UserRepo) GetUserByEmail(
 	ctx context.Context, email string) (int64, error) {
 	reqCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
@@ -285,9 +285,9 @@ func (o OwnerRepo) GetOwnerByEmail(
 	args := pgx.NamedArgs{
 		"email": email,
 	}
-	qGetOwnerByName := `select id from owner
+	qGetUserByName := `select id from owner
 	where email=@email;`
-	row, err := conn.Query(reqCtx, qGetOwnerByName, args)
+	row, err := conn.Query(reqCtx, qGetUserByName, args)
 	if err != nil {
 		return 0, errClassify(err)
 	}
