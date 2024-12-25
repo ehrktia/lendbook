@@ -15,8 +15,8 @@ type UserRepo struct {
 	connPool *pg.Postgres
 }
 
-func NewUser(connPool *pg.Postgres) *UserRepo {
-	return &UserRepo{
+func NewUser(connPool *pg.Postgres) UserRepo {
+	return UserRepo{
 		connPool: connPool,
 	}
 }

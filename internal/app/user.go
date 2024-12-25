@@ -14,7 +14,7 @@ type User struct {
 }
 
 func NewUser(repo data.UserRepo, l *slog.Logger) User {
-	l = l.WithGroup("app-layer-owner")
+	l = l.WithGroup("app-layer-user")
 	return User{
 		repo: repo,
 		l:    l,
@@ -45,8 +45,8 @@ func (o User) GetById(ctx context.Context, id float64) (model.User, error) {
 	// operate
 	ow, err := o.repo.GetById(ctx, id)
 	if err != nil {
-		o.l.LogAttrs(ctx, slog.LevelError, "error getting owner by id",
-			slog.Float64("owner-id", id),
+		o.l.LogAttrs(ctx, slog.LevelError, "error getting user by id",
+			slog.Float64("user-id", id),
 			slog.String("error", err.Error()))
 		return model.User{}, err
 	}
@@ -81,8 +81,7 @@ func (o User) GetById(ctx context.Context, id float64) (model.User, error) {
 
 	}
 	// result
-	return result, err
-
+	return result, nil
 }
 
 func (o User) GetUserByEmail(ctx context.Context, email string) (model.User, error) {
@@ -135,4 +134,3 @@ func (o User) GetUserByEmail(ctx context.Context, email string) (model.User, err
 	return result, err
 
 }
-
