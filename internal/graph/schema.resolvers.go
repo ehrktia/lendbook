@@ -21,14 +21,14 @@ func (r *queryResolver) BookByOwnerID(ctx context.Context, id float64) ([]*model
 	panic(fmt.Errorf("not implemented: BookByOwnerID - bookByOwnerId"))
 }
 
-// Owners is the resolver for the owners field.
-func (r *queryResolver) Owners(ctx context.Context) ([]*model1.Owner, error) {
-	panic(fmt.Errorf("not implemented: Owners - owners"))
+// Users is the resolver for the users field.
+func (r *queryResolver) Users(ctx context.Context) ([]*model1.User, error) {
+	panic(fmt.Errorf("not implemented: Users - users"))
 }
 
-// OwnerByID is the resolver for the ownerById field.
-func (r *queryResolver) OwnerByID(ctx context.Context, id float64) (*model1.Owner, error) {
-	panic(fmt.Errorf("not implemented: OwnerByID - ownerById"))
+// UserByID is the resolver for the userById field.
+func (r *queryResolver) UserByID(ctx context.Context, id float64) (*model1.User, error) {
+	panic(fmt.Errorf("not implemented: UserByID - userById"))
 }
 
 // Query returns QueryResolver implementation.
@@ -43,12 +43,10 @@ type queryResolver struct{ *Resolver }
 //    it when you're done.
 //  - You have helper methods in this file. Move them out to keep these resolver files clean.
 /*
-	func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: CreateTodo - createTodo"))
+	func (r *queryResolver) Owners(ctx context.Context) ([]*model1.Owner, error) {
+	panic(fmt.Errorf("not implemented: Owners - owners"))
 }
-func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: Todos - todos"))
+func (r *queryResolver) OwnerByID(ctx context.Context, id float64) (*model1.Owner, error) {
+	panic(fmt.Errorf("not implemented: OwnerByID - ownerById"))
 }
-func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
-type mutationResolver struct{ *Resolver }
 */

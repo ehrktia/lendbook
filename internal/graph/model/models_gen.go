@@ -13,15 +13,15 @@ type Book struct {
 	Updated   *string `json:"updated,omitempty"`
 }
 
-type Owner struct {
+type Query struct {
+}
+
+type User struct {
 	ID        float64 `json:"id"`
 	FirstName string  `json:"firstName"`
 	LastName  string  `json:"lastName"`
 	Email     string  `json:"email"`
 	Active    bool    `json:"active"`
-	Books     []*Book `json:"books"`
+	Books     []*Book `json:"books,omitempty"`
 	Version   int32   `json:"version"`
-}
-
-type Query struct {
 }

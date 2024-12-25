@@ -31,10 +31,10 @@ func TestMain(m *testing.M) {
 	os.Exit(exitCode)
 }
 
-func TestOwnerById(t *testing.T) {
+func TestUserById(t *testing.T) {
 	tCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	owner := NewOwner(pool)
+	owner := NewUser(pool)
 	o, err := owner.GetById(tCtx, float64(ownerId))
 	if err != nil {
 		t.Fatal(err)
@@ -51,11 +51,11 @@ var queryInsBook = `INSERT INTO public.books(
  title, author, edition, owner_id, available, added, updated)
 	VALUES ( 'book-1', 'author-1', '1', $1, TRUE, now(), now());`
 
-var queryInsOwner = `INSERT INTO public.owner(
+var queryInsUser = `INSERT INTO public.owner(
 	first_name, last_name, email, active,version)
 	VALUES ('first', 'last', 'first.last@email.com', true,1);`
 
-var queryOwnerByfirst = `select id from "owner" where first_name='first';`
+var queryUserByfirst = `select id from "owner" where first_name='first';`
 
 func setupTestData() error {
 	var err error
@@ -74,7 +74,7 @@ func setupTestData() error {
 		return err
 	}
 
-	tag, err := tx.Exec(ctx, queryInsOwner)
+	tag, err := tx.Exec(ctx, queryInsUser)
 	if err != nil {
 		return err
 	}
@@ -87,7 +87,7 @@ func setupTestData() error {
 		return err
 	}
 
-	_ = conn.QueryRow(ctx, queryOwnerByfirst).Scan(&ownerId)
+	_ = conn.QueryRow(ctx, queryUserByfirst).Scan(&ownerId)
 
 	tx, err = conn.Begin(ctx)
 	if err != nil {
@@ -111,13 +111,13 @@ func setupTestData() error {
 	return nil
 }
 
-func TestCreateOwner(t *testing.T) {
+func TestCreateUser(t *testing.T) {
 	tCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	var err error
-	owner := NewOwner(pool)
+	owner := NewUser(pool)
 	got, err := owner.Create(tCtx,
-		Owner{
+		User{
 			FirstName: t.Name(), LastName: t.Name(),
 			Email: t.Name(), Active: true})
 	if err != nil {
@@ -130,11 +130,11 @@ func TestCreateOwner(t *testing.T) {
 
 }
 
-func TestGetOwners(t *testing.T) {
+func TestGetUsers(t *testing.T) {
 	tCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	owner := NewOwner(pool)
-	owners, err := owner.GetOwners(tCtx)
+	owner := NewUser(pool)
+	owners, err := owner.GetUsers(tCtx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -143,15 +143,15 @@ func TestGetOwners(t *testing.T) {
 	}
 }
 
-func TestUpdateOwner(t *testing.T) {
+func TestUpdateUser(t *testing.T) {
 	tCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	owner := NewOwner(pool)
-	id, err := owner.GetOwnerByEmail(tCtx, `first.last@email.com`)
+	owner := NewUser(pool)
+	id, err := owner.GetUserByEmail(tCtx, `first.last@email.com`)
 	if err != nil {
 		t.Fatal(err)
 	}
-	testDataList := []OwnerWithNoBooks{
+	testDataList := []UserWithNoBooks{
 		{
 			ID:        id,
 			FirstName: "karthick-1",

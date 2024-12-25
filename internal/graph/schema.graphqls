@@ -1,12 +1,12 @@
 
 
-type Owner {
+type User {
   id : Float!
   firstName: String!
   lastName: String!
   email: String!
   active: Boolean!
-  books: [Book!]!
+  books: [Book]
   version: Int!
 }
 
@@ -25,6 +25,6 @@ type Book {
 type Query {
   books: [Book!]!
   bookByOwnerId(id: Float!): [Book!]!
-  owners: [Owner!]!
-  ownerById(id: Float!): Owner
+  users: [User!]!
+  userById(id: Float!): User
 }
