@@ -28,7 +28,11 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model1.User, error) {
 
 // UserByID is the resolver for the userById field.
 func (r *queryResolver) UserByID(ctx context.Context, id float64) (*model1.User, error) {
-	panic(fmt.Errorf("not implemented: UserByID - userById"))
+	user, err := r.UserService.GetById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
 }
 
 // Query returns QueryResolver implementation.

@@ -27,4 +27,5 @@ type Query {
   bookByOwnerId(id: Float!): [Book!]!
   users: [User!]!
   userById(id: Float!): User
+  userByEmail(email: String!): User
 }
