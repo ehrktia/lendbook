@@ -16,7 +16,7 @@ import (
 
 var ctx = context.Background()
 var once = &sync.Once{}
-var ownerId int64
+var lenderId int64
 var pool *pg.Postgres
 
 func TestMain(m *testing.M) {
@@ -34,13 +34,13 @@ func TestMain(m *testing.M) {
 func TestUserById(t *testing.T) {
 	tCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	owner := NewUser(pool)
-	o, err := owner.GetById(tCtx, float64(ownerId))
+	lender := NewUser(pool)
+	o, err := lender.GetById(tCtx, float64(lenderId))
 	if err != nil {
 		t.Fatal(err)
 	}
-	if o.ID != ownerId {
-		t.Fatalf("expected:%d,got:%d", ownerId, o.ID)
+	if o.ID != lenderId {
+		t.Fatalf("expected:%d,got:%d", lenderId, o.ID)
 	}
 	if len(o.Books) < 1 {
 		t.Fatalf("expected one book,got:%#v\n", o.Books)
@@ -51,11 +51,11 @@ var queryInsBook = `INSERT INTO public.books(
  title, author, edition, owner_id, available, added, updated)
 	VALUES ( 'book-1', 'author-1', '1', $1, TRUE, now(), now());`
 
-var queryInsUser = `INSERT INTO public.owner(
+var queryInsUser = `INSERT INTO public.lender(
 	first_name, last_name, email, active,version)
 	VALUES ('first', 'last', 'first.last@email.com', true,1);`
 
-var queryUserByfirst = `select id from "owner" where first_name='first';`
+var queryUserByfirst = `select id from "lender" where first_name='first';`
 
 func setupTestData() error {
 	var err error
@@ -87,14 +87,17 @@ func setupTestData() error {
 		return err
 	}
 
-	_ = conn.QueryRow(ctx, queryUserByfirst).Scan(&ownerId)
+	_ = conn.QueryRow(ctx, queryUserByfirst).Scan(&lenderId)
+	if lenderId < 1 {
+		panic("error user setup failed")
+	}
 
 	tx, err = conn.Begin(ctx)
 	if err != nil {
 		return err
 	}
 
-	tag, err = tx.Exec(ctx, queryInsBook, ownerId)
+	tag, err = tx.Exec(ctx, queryInsBook, lenderId)
 	if err != nil {
 		return err
 	}
@@ -115,15 +118,14 @@ func TestCreateUser(t *testing.T) {
 	tCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	var err error
-	owner := NewUser(pool)
-	got, err := owner.Create(tCtx,
+	lender := NewUser(pool)
+	got, err := lender.Create(tCtx,
 		User{
 			FirstName: t.Name(), LastName: t.Name(),
 			Email: t.Name(), Active: true})
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Logf("%d\n", got)
 	if got < 1 {
 		t.Fatalf("expected valid id,got:%d", got)
 	}
@@ -133,21 +135,21 @@ func TestCreateUser(t *testing.T) {
 func TestGetUsers(t *testing.T) {
 	tCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	owner := NewUser(pool)
-	owners, err := owner.GetUsers(tCtx)
+	lender := NewUser(pool)
+	lenders, err := lender.GetUsers(tCtx)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(owners) < 2 {
-		t.Fatalf("expected:2,got:%d", len(owners))
+	if len(lenders) < 2 {
+		t.Fatalf("expected:2,got:%d", len(lenders))
 	}
 }
 
 func TestUpdateUser(t *testing.T) {
 	tCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	owner := NewUser(pool)
-	id, err := owner.GetUserByEmail(tCtx, `first.last@email.com`)
+	lender := NewUser(pool)
+	id, err := lender.GetUserByEmail(tCtx, `first.last@email.com`)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -169,14 +171,14 @@ func TestUpdateUser(t *testing.T) {
 			Version:   3,
 		},
 	}
-	ow, err := owner.Update(tCtx, testDataList[0])
+	ow, err := lender.Update(tCtx, testDataList[0])
 	if err != nil {
 		t.Fatal(err)
 	}
 	if ow.Version != testDataList[0].Version {
 		t.Fatalf("expected:%s,got:%s\n", testDataList[0].String(), ow.String())
 	}
-	ow, err = owner.Update(tCtx, testDataList[1])
+	ow, err = lender.Update(tCtx, testDataList[1])
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -196,7 +198,7 @@ func cleanUp() error {
 	if err != nil {
 		return err
 	}
-	if _, err := tx.Exec(ctx, `truncate table public.owner cascade;`); err != nil {
+	if _, err := tx.Exec(ctx, `truncate table public.lender cascade;`); err != nil {
 		return err
 	}
 	if _, err := tx.Exec(ctx, `truncate table public.books cascade`); err != nil {
