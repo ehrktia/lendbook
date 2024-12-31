@@ -149,7 +149,7 @@ func (o UserRepo) Create(
 	if err != nil {
 		return ownerId, errClassify(err)
 	}
-	qCreateUser := `INSERT INTO public."owner"
+	qCreateUser := `INSERT INTO public."lender"
 (first_name, last_name, email, active,version)
 VALUES(@first_name, @last_name, @email, @active,@version) returning id;`
 	args := pgx.NamedArgs{
@@ -201,7 +201,7 @@ func (o UserRepo) Update(
 		return ow, errClassify(err)
 	}
 	qUpdateUser := `update
-	public."owner"
+	public."lender"
 set
 	first_name = @first_name,
 	last_name = @last_name,
@@ -285,7 +285,7 @@ func (o UserRepo) GetUserByEmail(
 	args := pgx.NamedArgs{
 		"email": email,
 	}
-	qGetUserByName := `select id from owner
+	qGetUserByName := `select id from lender
 	where email=@email;`
 	row, err := conn.Query(reqCtx, qGetUserByName, args)
 	if err != nil {

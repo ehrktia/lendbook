@@ -16,4 +16,4 @@ select
 ) as book_list
 )as Books
 from
-	"owner" o ;
+	"lender" o ;

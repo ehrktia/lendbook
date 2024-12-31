@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS public.books
 COMMENT ON TABLE public.books
     IS 'holds books data';
 
-CREATE TABLE IF NOT EXISTS public.owner
+CREATE TABLE IF NOT EXISTS public.lender
 (
     first_name character varying(255) NOT NULL,
     last_name character varying(255) NOT NULL,
@@ -27,10 +27,10 @@ CREATE TABLE IF NOT EXISTS public.owner
     email character varying(255) NOT NULL,
     active boolean,
     version int NOT NULL,
-    CONSTRAINT pk_owner_id PRIMARY KEY (id)
+    CONSTRAINT pk_lender_id PRIMARY KEY (id)
 );
 
-CREATE TABLE IF NOT EXISTS public.book_owner
+CREATE TABLE IF NOT EXISTS public.book_lender
 (
     book_id bigint NOT NULL,
     owner_id bigint NOT NULL,
@@ -38,10 +38,10 @@ CREATE TABLE IF NOT EXISTS public.book_owner
     CONSTRAINT pk_book_owner_id PRIMARY KEY (book_owner_id)
 );
 
-COMMENT ON TABLE public.book_owner
+COMMENT ON TABLE public.book_lender
     IS 'holds book and owner relationship details';
 
-ALTER TABLE IF EXISTS public.book_owner
+ALTER TABLE IF EXISTS public.book_lender
     ADD CONSTRAINT fk_book_id FOREIGN KEY (book_id)
     REFERENCES public.books (id) MATCH SIMPLE
     ON UPDATE NO ACTION
@@ -49,9 +49,9 @@ ALTER TABLE IF EXISTS public.book_owner
     NOT VALID;
 
 
-ALTER TABLE IF EXISTS public.book_owner
+ALTER TABLE IF EXISTS public.book_lender
     ADD CONSTRAINT fk_owner_id FOREIGN KEY (owner_id)
-    REFERENCES public.owner (id) MATCH SIMPLE
+    REFERENCES public.lender (id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION
     NOT VALID;
