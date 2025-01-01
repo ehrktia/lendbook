@@ -7,6 +7,8 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
+import CardActions from "@mui/material/CardActions";
+import Button from "@mui/material/Button";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: '#fff',
@@ -18,6 +20,8 @@ const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: '#1A2027',
   }),
 }));
+
+const backgroundURL = "http://localhost:8080/query";
 
 export default function Lender() {
   return (
@@ -43,19 +47,25 @@ export default function Lender() {
               <Item>
                 <Card sx={{ maxWidth: 345 }}>
                   <CardMedia
-                    sx={{ height: 140 }}
-                    image="/lizard.jpg"
-                    title="green iguana"
+                    sx={{ height: 150 }}
+                    image="/book_1_cover.jpg"
+                    title="Neelam-stupid book"
                   />
                   <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
-                      Lizard-1
+                    <Typography gutterBottom variant="h6" component="div">
+                      Neelam-stupid book-1
                     </Typography>
                     <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      Lizards are a widespread group of squamate reptiles, with over 6,000
-                      species, ranging across all continents except Antarctica
+                      This book takes an existing physics theory, fits in to 
+                      real life with scenarios
                     </Typography>
                   </CardContent>
+                  <CardActions>
+                    <Box sx={{ flexGrow: 1 }}>
+                      <Button size="small">Edit</Button>
+                      <Button size="small">Remove</Button>
+                    </Box>
+                  </CardActions>
                 </Card>
               </Item>
             </Grid>
@@ -63,19 +73,25 @@ export default function Lender() {
               <Item>
                 <Card sx={{ maxWidth: 345 }}>
                   <CardMedia
-                    sx={{ height: 140 }}
-                    image="/lizard.jpg"
-                    title="green iguana"
+                    sx={{ height: 150 }}
+                    image="/book_2_cover.jpg"
+                    title="Neelam stupid book 2"
                   />
                   <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
-                      Lizard-2
+                    <Typography gutterBottom variant="h6" component="div">
+                      Neelam stupid book version-2
                     </Typography>
                     <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      Lizards are a widespread group of squamate reptiles, with over 6,000
-                      species, ranging across all continents except Antarctica
+                      This book takes an existing physics theory and update it
+                      with real life scenarios
                     </Typography>
                   </CardContent>
+                  <CardActions>
+                    <Box sx={{ flexGrow: 1 }}>
+                      <Button size="small">Edit</Button>
+                      <Button size="small">Remove</Button>
+                    </Box>
+                  </CardActions>
                 </Card>
               </Item>
             </Grid>
@@ -83,19 +99,25 @@ export default function Lender() {
               <Item>
                 <Card sx={{ maxWidth: 345 }}>
                   <CardMedia
-                    sx={{ height: 140 }}
-                    image="/lizard.jpg"
-                    title="green iguana"
+                    sx={{ height: 150 }}
+                    image="/book_3_cover.jpg"
+                    title="neelam stupid book-3.0"
                   />
                   <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
-                      Lizard-3
+                    <Typography gutterBottom variant="h6" component="div">
+                      Neelam stupid book 3.0
                     </Typography>
                     <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      Lizards are a widespread group of squamate reptiles, with over 6,000
-                      species, ranging across all continents except Antarctica
+                      This is 3rd version of neelam stupid book, enhanced 
+                      examples of the life matching physics theory
                     </Typography>
                   </CardContent>
+                  <CardActions>
+                    <Box sx={{ flexGrow: 1 }}>
+                      <Button size="small">Edit</Button>
+                      <Button size="small">Remove</Button>
+                    </Box>
+                  </CardActions>
                 </Card>
               </Item>
             </Grid>
@@ -103,19 +125,25 @@ export default function Lender() {
               <Item>
                 <Card sx={{ maxWidth: 345 }}>
                   <CardMedia
-                    sx={{ height: 140 }}
+                    sx={{ height: 150 }}
                     image="/lizard.jpg"
-                    title="green iguana"
+                    title="neelam book on astrology"
                   />
                   <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
-                      Lizard-4
+                    <Typography gutterBottom variant="h6" component="div">
+                      Neelam Astrology Book-4
                     </Typography>
                     <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      Lizards are a widespread group of squamate reptiles, with over 6,000
-                      species, ranging across all continents except Antarctica
+                      This book explains why saturn rules your life and not 
+                      free will
                     </Typography>
                   </CardContent>
+                  <CardActions>
+                    <Box sx={{ flexGrow: 1 }}>
+                      <Button size="small">Edit</Button>
+                      <Button size="small">Remove</Button>
+                    </Box>
+                  </CardActions>
                 </Card>
               </Item>
             </Grid>
