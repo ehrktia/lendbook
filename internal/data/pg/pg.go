@@ -30,7 +30,8 @@ func (pg *Postgres) GetConn(ctx context.Context) (*pgxpool.Conn, error) {
 	return pg.connPool.Acquire(ctx)
 }
 
-func RuninTx(ctx context.Context, conn *pgxpool.Conn, f func(tx pgx.Tx) error) error {
+func RuninTx(
+	ctx context.Context, conn *pgxpool.Conn, f func(tx pgx.Tx) error) error {
 	if ctx.Err() != nil {
 		return ctx.Err()
 	}
