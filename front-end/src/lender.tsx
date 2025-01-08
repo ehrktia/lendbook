@@ -21,6 +21,7 @@ const Item = styled(Paper)(({ theme }) => ({
   }),
 }));
 
+// eslint-disble-next-line
 const backgroundURL = "http://localhost:8080/query";
 
 export default function Lender() {
