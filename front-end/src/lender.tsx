@@ -63,8 +63,10 @@ export default function Lender() {
                   </CardContent>
                   <CardActions>
                     <Box sx={{ flexGrow: 1 }}>
-                      <Button size="small">Edit</Button>
-                      <Button size="small">Remove</Button>
+                      <Button size="small" 
+                      onClick={() =>{ alert ("clicked edit");}}>Edit</Button>
+                      <Button size="small" 
+                      onClick={() =>{ window.alert ("are you sure");}}>Remove</Button>
                     </Box>
                   </CardActions>
                 </Card>
