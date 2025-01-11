@@ -22,7 +22,27 @@ func NewUser(repo data.UserRepo, l *slog.Logger) User {
 
 }
 
-func (o User) Create(ctx context.Context, user model.User) (model.User, error) {
+type CtxKey struct {
+	KeyName string
+}
+
+var CtxLogKey = CtxKey{KeyName: "logger"}
+
+func loadLogger(ctx context.Context, l *slog.Logger) context.Context {
+	rCtx := context.WithValue(ctx, CtxLogKey, l)
+	return rCtx
+}
+
+type UserFetcher interface {
+	GetById(ctx context.Context, id float64) (User, error)
+	GetBookByUserId(ctx context.Context, ownerId float64) ([]data.Book, error)
+	GetUsers(ctx context.Context) ([]data.User, error)
+	Create(ctx context.Context, owner data.User) (int64, error)
+	Update(ctx context.Context, owner data.UserWithNoBooks) (data.UserWithNoBooks, error)
+}
+
+func (o User) Create(ctx context.Context, user model.User) (
+	model.User, error) {
 
 	do := data.User{
 		FirstName: user.FirstName,
@@ -41,7 +61,8 @@ func (o User) Create(ctx context.Context, user model.User) (model.User, error) {
 	return user, nil
 }
 
-func (o User) GetById(ctx context.Context, id float64) (model.User, error) {
+func (o User) GetById(ctx context.Context, id float64) (
+	model.User, error) {
 	// operate
 	ow, err := o.repo.GetById(ctx, id)
 	if err != nil {
@@ -84,7 +105,9 @@ func (o User) GetById(ctx context.Context, id float64) (model.User, error) {
 	return result, nil
 }
 
-func (o User) GetUserByEmail(ctx context.Context, email string) (model.User, error) {
+func (o User) GetUserByEmail(ctx context.Context, email string) (
+	model.User, error) {
+	ctx = loadLogger(ctx, o.l)
 	uid, err := o.repo.GetUserByEmail(ctx, email)
 	if err != nil {
 		o.l.LogAttrs(ctx, slog.LevelError, "error fetching userid for email",
