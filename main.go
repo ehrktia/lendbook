@@ -17,7 +17,7 @@ func main() {
 	if err := infra.Run(ctx, log); err != nil {
 		log.LogAttrs(ctx, slog.LevelError, "stoping app",
 			slog.String("error", err.Error()))
-			os.Exit(1)
+		os.Exit(1)
 	}
 }
 
@@ -31,3 +31,4 @@ func JsonLogger(w io.Writer) *slog.Logger {
 	l := slog.New(h)
 	return l
 }
+

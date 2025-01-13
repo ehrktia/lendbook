@@ -190,8 +190,8 @@ func (owb UserWithNoBooks) String() string {
 
 }
 
-func (o UserRepo) Update(
-	ctx context.Context, owner UserWithNoBooks) (UserWithNoBooks, error) {
+func (o UserRepo) Update(ctx context.Context, owner UserWithNoBooks) (
+	UserWithNoBooks, error) {
 	reqCtx, cancel := context.WithTimeoutCause(ctx,
 		3*time.Second, errors.New("request timed out "))
 	defer cancel()
@@ -200,6 +200,7 @@ func (o UserRepo) Update(
 	if err != nil {
 		return ow, errClassify(err)
 	}
+
 	qUpdateUser := `update
 	public."lender"
 set

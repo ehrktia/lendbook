@@ -16,6 +16,7 @@ type Postgres struct {
 func NewPool(ctx context.Context, once *sync.Once) (*Postgres, error) {
 	var err error
 	pg := &Postgres{}
+	// TODO: move to env var or config
 	connString := "postgres://postgres:postgres@localhost:5432/lendbook?"
 	once.Do(func() {
 		pg.connPool, err = pgxpool.New(ctx, connString)
@@ -30,7 +31,8 @@ func (pg *Postgres) GetConn(ctx context.Context) (*pgxpool.Conn, error) {
 	return pg.connPool.Acquire(ctx)
 }
 
-func RuninTx(ctx context.Context, conn *pgxpool.Conn, f func(tx pgx.Tx) error) error {
+func RuninTx(
+	ctx context.Context, conn *pgxpool.Conn, f func(tx pgx.Tx) error) error {
 	if ctx.Err() != nil {
 		return ctx.Err()
 	}
