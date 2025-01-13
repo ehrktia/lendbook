@@ -2,6 +2,7 @@
   "name": "front-end",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
@@ -13,17 +14,17 @@
     "@testing-library/user-event": "^13.2.1",
     "@toolpad/core": "^0.11.0",
     "@types/jest": "^27.0.1",
-    "@types/node": "^16.7.13",
+    "@types/node": "^22.10.5",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "add": "^2.0.6",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "graphql": "^16.10.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "react-router": "^7.1.1",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "source-map-explorer": "^2.5.3",
     "styled-components": "^6.1.13",
-    "typescript": "^4.4.2",
     "web-vitals": "^2.1.0",
     "yarn": "^1.22.22"
   },
@@ -32,7 +33,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "codegen": "graphql-codegen --config codegen.ts"
   },
   "eslintConfig": {
     "extends": [
@@ -51,5 +53,15 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@graphql-codegen/cli": "5.0.3",
+    "@graphql-codegen/client-preset": "4.5.1",
+    "@graphql-codegen/introspection": "4.0.3",
+    "@graphql-codegen/typescript": "^4.1.2",
+    "eslint": "^8.57.1",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.19.1"
   }
 }
