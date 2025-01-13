@@ -2,4 +2,5 @@
 clear
 set -euo pipefail
 echo -n "generating mocks..."
-mockery --dir internal --outpkg mocks --output mocks --all --exclude internal/graph --with-expecter=true
+mockery --dir internal --outpkg mocks --output mocks --all \
+    --exclude internal/graph --with-expecter=true

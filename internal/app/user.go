@@ -9,11 +9,11 @@ import (
 )
 
 type User struct {
-	repo data.UserRepo
+	repo UserFetcher
 	l    *slog.Logger
 }
 
-func NewUser(repo data.UserRepo, l *slog.Logger) User {
+func NewUser(repo UserFetcher, l *slog.Logger) User {
 	l = l.WithGroup("app-layer-user")
 	return User{
 		repo: repo,
@@ -22,23 +22,13 @@ func NewUser(repo data.UserRepo, l *slog.Logger) User {
 
 }
 
-type CtxKey struct {
-	KeyName string
-}
-
-var CtxLogKey = CtxKey{KeyName: "logger"}
-
-func loadLogger(ctx context.Context, l *slog.Logger) context.Context {
-	rCtx := context.WithValue(ctx, CtxLogKey, l)
-	return rCtx
-}
-
 type UserFetcher interface {
-	GetById(ctx context.Context, id float64) (User, error)
+	GetById(ctx context.Context, id float64) (data.User, error)
 	GetBookByUserId(ctx context.Context, ownerId float64) ([]data.Book, error)
 	GetUsers(ctx context.Context) ([]data.User, error)
 	Create(ctx context.Context, owner data.User) (int64, error)
 	Update(ctx context.Context, owner data.UserWithNoBooks) (data.UserWithNoBooks, error)
+	GetUserByEmail(ctx context.Context, email string) (int64, error)
 }
 
 func (o User) Create(ctx context.Context, user model.User) (
@@ -107,7 +97,6 @@ func (o User) GetById(ctx context.Context, id float64) (
 
 func (o User) GetUserByEmail(ctx context.Context, email string) (
 	model.User, error) {
-	ctx = loadLogger(ctx, o.l)
 	uid, err := o.repo.GetUserByEmail(ctx, email)
 	if err != nil {
 		o.l.LogAttrs(ctx, slog.LevelError, "error fetching userid for email",

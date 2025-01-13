@@ -5,10 +5,7 @@ package mocks
 import (
 	context "context"
 
-	app "github.com/ehrktia/lendbook/internal/app"
-
 	data "github.com/ehrktia/lendbook/internal/data"
-
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -142,22 +139,22 @@ func (_c *UserFetcher_GetBookByUserId_Call) RunAndReturn(run func(context.Contex
 }
 
 // GetById provides a mock function with given fields: ctx, id
-func (_m *UserFetcher) GetById(ctx context.Context, id float64) (app.User, error) {
+func (_m *UserFetcher) GetById(ctx context.Context, id float64) (data.User, error) {
 	ret := _m.Called(ctx, id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetById")
 	}
 
-	var r0 app.User
+	var r0 data.User
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, float64) (app.User, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, float64) (data.User, error)); ok {
 		return rf(ctx, id)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, float64) app.User); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, float64) data.User); ok {
 		r0 = rf(ctx, id)
 	} else {
-		r0 = ret.Get(0).(app.User)
+		r0 = ret.Get(0).(data.User)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, float64) error); ok {
@@ -188,12 +185,69 @@ func (_c *UserFetcher_GetById_Call) Run(run func(ctx context.Context, id float64
 	return _c
 }
 
-func (_c *UserFetcher_GetById_Call) Return(_a0 app.User, _a1 error) *UserFetcher_GetById_Call {
+func (_c *UserFetcher_GetById_Call) Return(_a0 data.User, _a1 error) *UserFetcher_GetById_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *UserFetcher_GetById_Call) RunAndReturn(run func(context.Context, float64) (app.User, error)) *UserFetcher_GetById_Call {
+func (_c *UserFetcher_GetById_Call) RunAndReturn(run func(context.Context, float64) (data.User, error)) *UserFetcher_GetById_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetUserByEmail provides a mock function with given fields: ctx, email
+func (_m *UserFetcher) GetUserByEmail(ctx context.Context, email string) (int64, error) {
+	ret := _m.Called(ctx, email)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetUserByEmail")
+	}
+
+	var r0 int64
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) (int64, error)); ok {
+		return rf(ctx, email)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string) int64); ok {
+		r0 = rf(ctx, email)
+	} else {
+		r0 = ret.Get(0).(int64)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, email)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// UserFetcher_GetUserByEmail_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetUserByEmail'
+type UserFetcher_GetUserByEmail_Call struct {
+	*mock.Call
+}
+
+// GetUserByEmail is a helper method to define mock.On call
+//   - ctx context.Context
+//   - email string
+func (_e *UserFetcher_Expecter) GetUserByEmail(ctx interface{}, email interface{}) *UserFetcher_GetUserByEmail_Call {
+	return &UserFetcher_GetUserByEmail_Call{Call: _e.mock.On("GetUserByEmail", ctx, email)}
+}
+
+func (_c *UserFetcher_GetUserByEmail_Call) Run(run func(ctx context.Context, email string)) *UserFetcher_GetUserByEmail_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(string))
+	})
+	return _c
+}
+
+func (_c *UserFetcher_GetUserByEmail_Call) Return(_a0 int64, _a1 error) *UserFetcher_GetUserByEmail_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *UserFetcher_GetUserByEmail_Call) RunAndReturn(run func(context.Context, string) (int64, error)) *UserFetcher_GetUserByEmail_Call {
 	_c.Call.Return(run)
 	return _c
 }
