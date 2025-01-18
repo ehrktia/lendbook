@@ -31,4 +31,3 @@ func JsonLogger(w io.Writer) *slog.Logger {
 	l := slog.New(h)
 	return l
 }
-

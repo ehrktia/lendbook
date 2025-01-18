@@ -8,6 +8,7 @@ import (
 
 	"github.com/ehrktia/lendbook/internal/data"
 	"github.com/ehrktia/lendbook/mocks"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 var ctx, cancel = context.WithCancel(context.Background())
@@ -48,6 +49,20 @@ func TestGetUserByEmailError(t *testing.T) {
 				return mockUserDataStore
 			},
 		},
+		{
+			name:  "pg error",
+			email: "first.last@email.com",
+			err:   &pgconn.PgError{Code: t.Name(), Message: t.Name()},
+			expect: func() *mocks.UserFetcher {
+				cancel()
+				mockUserDataStore := mocks.NewUserFetcher(t)
+				mockUserDataStore.
+					EXPECT().GetUserByEmail(ctx, "first.last@email.com").
+					Return(int64(0), &pgconn.PgError{Code: t.Name(),
+						Message: t.Name()})
+				return mockUserDataStore
+			},
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -60,14 +75,14 @@ func TestGetUserByEmailError(t *testing.T) {
 			if err == nil {
 				t.Fatalf("expected:%v,got:%v\n", ctx.Err(), err)
 			}
-			if test.ctxErr {
+			switch {
+			case test.ctxErr:
 				if !errors.Is(err, ctx.Err()) {
 					t.Fatalf("expected:%v,got:%v\n", ctx.Err(), err)
 				}
-
-			} else {
+			default:
 				if !errors.Is(err, test.err) {
-					t.Fatalf("expected:%v,got:%v\n", test.err, err)
+					t.Fatalf("expected-%v,got-%v\n", test.err, err)
 				}
 			}
 

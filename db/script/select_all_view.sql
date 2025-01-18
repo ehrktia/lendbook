@@ -1,4 +1,4 @@
-drop view owner_with_books 
+drop view owner_with_books ;
 create view owner_with_books as 
 select
 	o.*,
