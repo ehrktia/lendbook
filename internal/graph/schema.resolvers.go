@@ -8,7 +8,7 @@ import (
 	"context"
 	"fmt"
 
-	model1 "github.com/ehrktia/lendbook/internal/graph/model"
+	model1 "codeberg.org/ehrktia/lendbook/internal/graph/model"
 )
 
 // Books is the resolver for the books field.

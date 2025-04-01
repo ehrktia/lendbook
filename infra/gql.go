@@ -3,12 +3,12 @@ package infra
 import (
 	"net/http"
 
+	"codeberg.org/ehrktia/lendbook/internal/graph"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/ehrktia/lendbook/internal/graph"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 

@@ -5,7 +5,7 @@ package mocks
 import (
 	context "context"
 
-	data "github.com/ehrktia/lendbook/internal/data"
+	data "codeberg.org/ehrktia/lendbook/internal/data"
 	mock "github.com/stretchr/testify/mock"
 )
 

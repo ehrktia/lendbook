@@ -1,7 +1,7 @@
 //go:generate go run github.com/99designs/gqlgen generate
 package graph
 
-import "github.com/ehrktia/lendbook/internal/app"
+import "codeberg.org/ehrktia/lendbook/internal/app"
 
 // This file will not be regenerated automatically.
 //

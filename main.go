@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/ehrktia/lendbook/infra"
+	"codeberg.org/ehrktia/lendbook/infra"
 )
 
 func main() {

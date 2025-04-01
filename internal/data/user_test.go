@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ehrktia/lendbook/internal/data/pg"
+	"codeberg.org/ehrktia/lendbook/internal/data/pg"
 )
 
 var ctx = context.Background()

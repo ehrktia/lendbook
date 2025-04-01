@@ -9,10 +9,10 @@ import (
 	"os/signal"
 	"sync"
 
-	"github.com/ehrktia/lendbook/internal/app"
-	"github.com/ehrktia/lendbook/internal/data"
-	"github.com/ehrktia/lendbook/internal/data/pg"
-	"github.com/ehrktia/lendbook/internal/graph"
+	"codeberg.org/ehrktia/lendbook/internal/app"
+	"codeberg.org/ehrktia/lendbook/internal/data"
+	"codeberg.org/ehrktia/lendbook/internal/data/pg"
+	"codeberg.org/ehrktia/lendbook/internal/graph"
 )
 
 func Run(ctx context.Context, l *slog.Logger) error {

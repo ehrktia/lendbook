@@ -4,8 +4,8 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/ehrktia/lendbook/internal/data"
-	"github.com/ehrktia/lendbook/internal/graph/model"
+	"codeberg.org/ehrktia/lendbook/internal/data"
+	"codeberg.org/ehrktia/lendbook/internal/graph/model"
 )
 
 type Commander interface {

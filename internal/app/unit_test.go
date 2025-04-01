@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ehrktia/lendbook/internal/data"
-	"github.com/ehrktia/lendbook/mocks"
+	"codeberg.org/ehrktia/lendbook/internal/data"
+	"codeberg.org/ehrktia/lendbook/mocks"
 	"github.com/jackc/pgx/v5/pgconn"
 )
 

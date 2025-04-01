@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ehrktia/lendbook/internal/data/pg"
+	"codeberg.org/ehrktia/lendbook/internal/data/pg"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 )

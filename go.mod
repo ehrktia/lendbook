@@ -1,4 +1,4 @@
-module github.com/ehrktia/lendbook
+module codeberg.org/ehrktia/lendbook
 
 go 1.23.4
 

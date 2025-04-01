@@ -12,9 +12,9 @@ import (
 	"sync"
 	"sync/atomic"
 
+	"codeberg.org/ehrktia/lendbook/internal/graph/model"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
-	"github.com/ehrktia/lendbook/internal/graph/model"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -956,7 +956,7 @@ func (ec *executionContext) _BookList_data(ctx context.Context, field graphql.Co
 	}
 	res := resTmp.([]*model.Book)
 	fc.Result = res
-	return ec.marshalOBook2ᚕᚖgithubᚗcomᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐBook(ctx, field.Selections, res)
+	return ec.marshalOBook2ᚕᚖcodebergᚗorgᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐBook(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_BookList_data(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1106,7 +1106,7 @@ func (ec *executionContext) _Query_books(ctx context.Context, field graphql.Coll
 	}
 	res := resTmp.(*model.BookList)
 	fc.Result = res
-	return ec.marshalNBookList2ᚖgithubᚗcomᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐBookList(ctx, field.Selections, res)
+	return ec.marshalNBookList2ᚖcodebergᚗorgᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐBookList(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_books(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1158,7 +1158,7 @@ func (ec *executionContext) _Query_bookByOwnerId(ctx context.Context, field grap
 	}
 	res := resTmp.([]*model.Book)
 	fc.Result = res
-	return ec.marshalNBook2ᚕᚖgithubᚗcomᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐBookᚄ(ctx, field.Selections, res)
+	return ec.marshalNBook2ᚕᚖcodebergᚗorgᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐBookᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_bookByOwnerId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1231,7 +1231,7 @@ func (ec *executionContext) _Query_users(ctx context.Context, field graphql.Coll
 	}
 	res := resTmp.([]*model.User)
 	fc.Result = res
-	return ec.marshalNUser2ᚕᚖgithubᚗcomᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐUserᚄ(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚕᚖcodebergᚗorgᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐUserᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_users(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1288,7 +1288,7 @@ func (ec *executionContext) _Query_userById(ctx context.Context, field graphql.C
 	}
 	res := resTmp.(*model.User)
 	fc.Result = res
-	return ec.marshalOUser2ᚖgithubᚗcomᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalOUser2ᚖcodebergᚗorgᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_userById(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1356,7 +1356,7 @@ func (ec *executionContext) _Query_userByEmail(ctx context.Context, field graphq
 	}
 	res := resTmp.(*model.User)
 	fc.Result = res
-	return ec.marshalOUser2ᚖgithubᚗcomᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalOUser2ᚖcodebergᚗorgᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_userByEmail(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1775,7 +1775,7 @@ func (ec *executionContext) _User_books(ctx context.Context, field graphql.Colle
 	}
 	res := resTmp.([]*model.Book)
 	fc.Result = res
-	return ec.marshalOBook2ᚕᚖgithubᚗcomᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐBook(ctx, field.Selections, res)
+	return ec.marshalOBook2ᚕᚖcodebergᚗorgᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐBook(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_User_books(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4481,7 +4481,7 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) marshalNBook2ᚕᚖgithubᚗcomᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐBookᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Book) graphql.Marshaler {
+func (ec *executionContext) marshalNBook2ᚕᚖcodebergᚗorgᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐBookᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Book) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -4505,7 +4505,7 @@ func (ec *executionContext) marshalNBook2ᚕᚖgithubᚗcomᚋehrktiaᚋlendbook
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNBook2ᚖgithubᚗcomᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐBook(ctx, sel, v[i])
+			ret[i] = ec.marshalNBook2ᚖcodebergᚗorgᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐBook(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -4525,7 +4525,7 @@ func (ec *executionContext) marshalNBook2ᚕᚖgithubᚗcomᚋehrktiaᚋlendbook
 	return ret
 }
 
-func (ec *executionContext) marshalNBook2ᚖgithubᚗcomᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐBook(ctx context.Context, sel ast.SelectionSet, v *model.Book) graphql.Marshaler {
+func (ec *executionContext) marshalNBook2ᚖcodebergᚗorgᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐBook(ctx context.Context, sel ast.SelectionSet, v *model.Book) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -4535,11 +4535,11 @@ func (ec *executionContext) marshalNBook2ᚖgithubᚗcomᚋehrktiaᚋlendbookᚋ
 	return ec._Book(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNBookList2githubᚗcomᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐBookList(ctx context.Context, sel ast.SelectionSet, v model.BookList) graphql.Marshaler {
+func (ec *executionContext) marshalNBookList2codebergᚗorgᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐBookList(ctx context.Context, sel ast.SelectionSet, v model.BookList) graphql.Marshaler {
 	return ec._BookList(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNBookList2ᚖgithubᚗcomᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐBookList(ctx context.Context, sel ast.SelectionSet, v *model.BookList) graphql.Marshaler {
+func (ec *executionContext) marshalNBookList2ᚖcodebergᚗorgᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐBookList(ctx context.Context, sel ast.SelectionSet, v *model.BookList) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -4609,7 +4609,7 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) marshalNUser2ᚕᚖgithubᚗcomᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐUserᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.User) graphql.Marshaler {
+func (ec *executionContext) marshalNUser2ᚕᚖcodebergᚗorgᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐUserᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.User) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -4633,7 +4633,7 @@ func (ec *executionContext) marshalNUser2ᚕᚖgithubᚗcomᚋehrktiaᚋlendbook
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNUser2ᚖgithubᚗcomᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐUser(ctx, sel, v[i])
+			ret[i] = ec.marshalNUser2ᚖcodebergᚗorgᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐUser(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -4653,7 +4653,7 @@ func (ec *executionContext) marshalNUser2ᚕᚖgithubᚗcomᚋehrktiaᚋlendbook
 	return ret
 }
 
-func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
+func (ec *executionContext) marshalNUser2ᚖcodebergᚗorgᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -4914,7 +4914,7 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 	return res
 }
 
-func (ec *executionContext) marshalOBook2ᚕᚖgithubᚗcomᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐBook(ctx context.Context, sel ast.SelectionSet, v []*model.Book) graphql.Marshaler {
+func (ec *executionContext) marshalOBook2ᚕᚖcodebergᚗorgᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐBook(ctx context.Context, sel ast.SelectionSet, v []*model.Book) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -4941,7 +4941,7 @@ func (ec *executionContext) marshalOBook2ᚕᚖgithubᚗcomᚋehrktiaᚋlendbook
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOBook2ᚖgithubᚗcomᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐBook(ctx, sel, v[i])
+			ret[i] = ec.marshalOBook2ᚖcodebergᚗorgᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐBook(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -4955,7 +4955,7 @@ func (ec *executionContext) marshalOBook2ᚕᚖgithubᚗcomᚋehrktiaᚋlendbook
 	return ret
 }
 
-func (ec *executionContext) marshalOBook2ᚖgithubᚗcomᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐBook(ctx context.Context, sel ast.SelectionSet, v *model.Book) graphql.Marshaler {
+func (ec *executionContext) marshalOBook2ᚖcodebergᚗorgᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐBook(ctx context.Context, sel ast.SelectionSet, v *model.Book) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -5004,7 +5004,7 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	return res
 }
 
-func (ec *executionContext) marshalOUser2ᚖgithubᚗcomᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
+func (ec *executionContext) marshalOUser2ᚖcodebergᚗorgᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

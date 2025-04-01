@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ehrktia/lendbook/internal/data"
-	"github.com/ehrktia/lendbook/internal/data/pg"
+	"codeberg.org/ehrktia/lendbook/internal/data"
+	"codeberg.org/ehrktia/lendbook/internal/data/pg"
 )
 
 func TestGetUserByID(t *testing.T) {
