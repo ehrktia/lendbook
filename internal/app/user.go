@@ -51,8 +51,6 @@ func (o User) Create(ctx context.Context, user model.User) (
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
 		Email:     user.Email,
-		Active:    user.Active,
-		Books:     make([]data.BookList, 0),
 	}
 	userId, err := o.command.Create(ctx, do)
 	if err != nil {
@@ -80,29 +78,6 @@ func (o User) GetById(ctx context.Context, id string) (
 		FirstName: ow.FirstName,
 		LastName:  ow.LastName,
 		Email:     ow.Email,
-		Active:    ow.Active,
-		Version:   ow.Version,
-	}
-	if len(ow.Books) < 1 {
-		return result, nil
-	}
-	bl := make([]*model.Book, len(ow.Books))
-	for i, v := range ow.Books {
-		bl[i] = &model.Book{
-			ID:        v.ID,
-			Title:     v.Title,
-			Author:    v.Author,
-			Edition:   v.Edition,
-			Available: v.Available,
-			OwnerID:   float64(v.OwnerID),
-		}
-		if v.Added != "" {
-			bl[i].Added = &v.Added
-		}
-		if v.Updated != "" {
-			bl[i].Updated = &v.Updated
-		}
-
 	}
 	// result
 	return result, nil
@@ -131,31 +106,7 @@ func (o User) GetUserByEmail(ctx context.Context, email string) (
 		FirstName: u.FirstName,
 		LastName:  u.LastName,
 		Email:     u.Email,
-		Active:    u.Active,
-		Version:   u.Version,
 	}
-	if len(u.Books) < 1 {
-		return result, nil
-	}
-	bl := make([]*model.Book, len(u.Books))
-	for i, v := range u.Books {
-		bl[i] = &model.Book{
-			ID:        v.ID,
-			Title:     v.Title,
-			Author:    v.Author,
-			Edition:   v.Edition,
-			Available: v.Available,
-			OwnerID:   float64(v.OwnerID),
-		}
-		if v.Added != "" {
-			bl[i].Added = &v.Added
-		}
-		if v.Updated != "" {
-			bl[i].Updated = &v.Updated
-		}
-
-	}
-	// result
 	return result, err
 
 }

@@ -35,13 +35,16 @@ func (o UserRepo) GetById(
 		conn.Conn().Close(reqCtx)
 		conn.Release()
 	}()
-	qUserById := `select
+	q := `select
 	*
 from
-	owner_with_books owb
+	owner
 where
-	id = $1;`
-	rows, err := conn.Query(reqCtx, qUserById, id)
+	id = @id;`
+	args := pgx.NamedArgs{
+		"id": id,
+	}
+	rows, err := conn.Query(reqCtx, q, args)
 	if err != nil {
 		return User{}, errClassify(err)
 	}
@@ -52,7 +55,6 @@ where
 	if ctx.Err() != nil {
 		return owner, ctx.Err()
 	}
-
 	return owner, nil
 }
 
@@ -100,13 +102,12 @@ type BookList struct {
 }
 
 type User struct {
-	ID        string     `json:"id"`
-	FirstName string     `json:"firstName"`
-	LastName  string     `json:"lastName"`
-	Email     string     `json:"email"`
-	Active    bool       `json:"active"`
-	Version   int32      `json:"version"`
-	Books     []BookList `json:"books"`
+	ID        string    `json:"id"`
+	FirstName string    `json:"firstName"`
+	LastName  string    `json:"lastName"`
+	Email     string    `json:"email"`
+	Added     time.Time `json:"added"`
+	Updated   time.Time `json:"updated"`
 }
 
 func (o UserRepo) GetUsers(ctx context.Context) ([]User, error) {
@@ -149,18 +150,20 @@ func (o UserRepo) Create(
 	if err != nil {
 		return ownerId, errClassify(err)
 	}
-	qCreateUser := `INSERT INTO public."lender"
-(first_name, last_name, email, active,version)
-VALUES(@first_name, @last_name, @email, @active,@version) returning id;`
+	q := `insert
+	into
+	public."owner" (
+	first_name,
+	last_name,
+	email)
+values( @fname, @lname, @email) returning id;`
 	args := pgx.NamedArgs{
-		"first_name": owner.FirstName,
-		"last_name":  owner.LastName,
-		"email":      owner.Email,
-		"active":     owner.Active,
-		"version":    owner.Version,
+		"fname": owner.FirstName,
+		"lname": owner.LastName,
+		"email": owner.Email,
 	}
 	f := func(tx pgx.Tx) error {
-		rows, err := tx.Query(reqCtx, qCreateUser, args)
+		rows, err := tx.Query(reqCtx, q, args)
 		if err != nil {
 			return err
 		}
@@ -300,5 +303,28 @@ func (o UserRepo) GetUserByEmail(
 		return "", ctx.Err()
 	}
 	return id, nil
+}
 
+func (o UserRepo) DeleteByID(ctx context.Context, id string) error {
+	reqCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	conn, err := o.connPool.GetConn(reqCtx)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		conn.Conn().Close(reqCtx)
+		conn.Release()
+	}()
+	args := pgx.NamedArgs{
+		"id": id,
+	}
+	q := `delete from owner where id=@id;`
+	if _, err := conn.Query(reqCtx, q, args); err != nil {
+		return errClassify(err)
+	}
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+	return nil
 }

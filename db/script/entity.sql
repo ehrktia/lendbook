@@ -2,22 +2,46 @@
 -- Please log an issue at https://github.com/pgadmin-org/pgadmin4/issues/new/choose if you find any bugs, including reproduction steps.
 BEGIN;
 
+create table public.owner (
+id uuid default gen_random_uuid() primary key,
+first_name varchar(255) not null,
+last_name varchar(255) not null,
+email varchar(255) not null,
+		added timestamp default (now() at time zone 'utc'),
+		updated timestamp default (now() at time zone 'utc')
+);
+-- Permissions
+alter table public.owner owner to postgres;
 
-CREATE TABLE IF NOT EXISTS public.book
-(
-    id uuid NOT NULL DEFAULT gen_random_uuid(),
-    title character varying(255) NOT NULL,
-    author character varying(255) NOT NULL,
-    edition character varying(50),
-    owner_id bigint NOT NULL,
-    available boolean,
-    added timestamp without time zone DEFAULT now(),
-    updated timestamp without time ZONE DEFAULT now(),
-    CONSTRAINT pk_book_id PRIMARY KEY (id)
+grant all on
+table public.owner to postgres;
+
+create table public.book (
+	id uuid default gen_random_uuid() not null,
+	title varchar(255) not null,
+	author varchar(255) not null,
+	edition varchar(50) null,
+	owner_id uuid references owner(id) on
+update
+	restrict on
+	delete
+		restrict,
+		available bool default false,
+		added timestamp default (now() at time zone 'utc'),
+		updated timestamp default (now() at time zone 'utc'),
+		constraint pk_book_id primary key (id)
 );
 
-COMMENT ON TABLE public.book
-    IS 'holds books data';
+comment on
+table public.book is 'holds books data';
+-- Permissions
+alter table public.book owner to postgres;
+
+grant all on
+table public.book to postgres;
+
+
+
 
 CREATE TABLE IF NOT EXISTS public.lender
 (
@@ -32,19 +56,27 @@ CREATE TABLE IF NOT EXISTS public.lender
 COMMENT ON TABLE public.lender
     IS 'holds lender data';
 
-CREATE TABLE IF NOT EXISTS public.book_lender
-(
-    book_id uuid  references public.book(id)  
-    on update  restrict on delete restrict,
-    owner_id uuid  references public.lender(id) 
-    on update restrict   on delete restrict,
-    book_owner_id uuid NOT NULL DEFAULT gen_random_uuid(),
-    added timestamp without time zone DEFAULT now(),
-    updated timestamp without time ZONE DEFAULT now(),
-    CONSTRAINT pk_book_owner_id PRIMARY KEY (book_owner_id)
+create table public.book_lender (
+	book_id uuid null,
+	owner_id uuid null,
+	book_owner_id uuid default gen_random_uuid() primary key,
+	added timestamp default (now() at time zone 'utc'),
+	updated timestamp default (now() at time zone 'utc')
+	
 );
 
-COMMENT ON TABLE public.book_lender
-    IS 'holds book and owner relationship details';
+comment on
+table public.book_lender is 'holds book and owner relationship details';
+-- Permissions
 
+alter table public.book_lender owner to postgres;
 
+grant all on
+table public.book_lender to postgres;
+-- public.book_lender foreign keys
+
+alter table public.book_lender add constraint book_lender_owner_id_fkey foreign key (owner_id) references public.owner(id) on
+delete
+	restrict on
+	update
+	restrict;
