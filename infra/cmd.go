@@ -3,6 +3,7 @@ package infra
 import (
 	"context"
 	"log/slog"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -23,10 +24,12 @@ func Run(ctx context.Context, l *slog.Logger) error {
 		return err
 	}
 	userRepo := data.NewUser(postgres)
-	// bookRepo := data.NewBook(postgres)
-	userApp := app.NewUser(userRepo, l)
+	bookRepo := data.NewBook(postgres)
+	userApp := app.NewUser(userRepo, userRepo, l)
+	bookApp := app.NewBook(bookRepo, l)
 	resolver := &graph.Resolver{
 		UserService: userApp,
+		BookService: bookApp,
 	}
 	port := getGQLServerPort()
 	httpServer := initWebServer(port)
@@ -59,8 +62,7 @@ func getGQLServerPort() string {
 
 func initWebServer(port string) *http.Server {
 	return &http.Server{
-		Addr: "[::]:" + port,
+		Addr: net.JoinHostPort("::", port),
 	}
 
 }
-

@@ -33,9 +33,7 @@ type Book struct {
 
 var ErrNodata = fmt.Errorf("%s", "no data found")
 
-var query = `select * from books`
-
-func (b BookRepo) GetAllBooks(ctx context.Context) ([]Book, error) {
+func (b BookRepo) GetBooks(ctx context.Context, of, limit int) ([]Book, error) {
 	reqCtx, cancel := context.WithTimeout(ctx, 2*time.Second)
 	defer cancel()
 	conn, err := b.connPool.GetConn(reqCtx)
@@ -46,7 +44,9 @@ func (b BookRepo) GetAllBooks(ctx context.Context) ([]Book, error) {
 		conn.Conn().Close(reqCtx)
 		conn.Release()
 	}()
-	rows, err := conn.Query(reqCtx, query)
+	var query = `select * from books offset @offset limit @limit`
+	args := pgx.NamedArgs{"offset": 0, "limit": 10}
+	rows, err := conn.Query(reqCtx, query, args)
 	if err != nil {
 		switch {
 		case errors.Is(err, pgx.ErrNoRows):

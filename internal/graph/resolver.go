@@ -9,4 +9,5 @@ import "github.com/ehrktia/lendbook/internal/app"
 
 type Resolver struct {
 	UserService app.User
+	BookService app.Book
 }

@@ -13,6 +13,12 @@ type Book struct {
 	Updated   *string `json:"updated,omitempty"`
 }
 
+type BookList struct {
+	Data []*Book `json:"data,omitempty"`
+	Prev string  `json:"prev"`
+	Next string  `json:"next"`
+}
+
 type Query struct {
 }
 

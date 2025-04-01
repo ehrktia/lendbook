@@ -3,57 +3,48 @@
 BEGIN;
 
 
-CREATE TABLE IF NOT EXISTS public.books
+CREATE TABLE IF NOT EXISTS public.book
 (
-    id bigserial NOT NULL,
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
     title character varying(255) NOT NULL,
     author character varying(255) NOT NULL,
     edition character varying(50),
     owner_id bigint NOT NULL,
     available boolean,
     added timestamp without time zone DEFAULT now(),
-    updated timestamp without time zone,
+    updated timestamp without time ZONE DEFAULT now(),
     CONSTRAINT pk_book_id PRIMARY KEY (id)
 );
 
-COMMENT ON TABLE public.books
+COMMENT ON TABLE public.book
     IS 'holds books data';
 
 CREATE TABLE IF NOT EXISTS public.lender
 (
+    id uuid NOT NULL DEFAULT gen_random_uuid(),   
     first_name character varying(255) NOT NULL,
     last_name character varying(255) NOT NULL,
-    id bigserial NOT NULL,
     email character varying(255) NOT NULL,
-    active boolean,
-    version int NOT NULL,
+    active boolean default false,
+    version int NOT null check (version > 0),
     CONSTRAINT pk_lender_id PRIMARY KEY (id)
 );
+COMMENT ON TABLE public.lender
+    IS 'holds lender data';
 
 CREATE TABLE IF NOT EXISTS public.book_lender
 (
-    book_id bigint NOT NULL,
-    owner_id bigint NOT NULL,
-    book_owner_id bigserial NOT NULL,
+    book_id uuid  references public.book(id)  
+    on update  restrict on delete restrict,
+    owner_id uuid  references public.lender(id) 
+    on update restrict   on delete restrict,
+    book_owner_id uuid NOT NULL DEFAULT gen_random_uuid(),
+    added timestamp without time zone DEFAULT now(),
+    updated timestamp without time ZONE DEFAULT now(),
     CONSTRAINT pk_book_owner_id PRIMARY KEY (book_owner_id)
 );
 
 COMMENT ON TABLE public.book_lender
     IS 'holds book and owner relationship details';
 
-ALTER TABLE IF EXISTS public.book_lender
-    ADD CONSTRAINT fk_book_id FOREIGN KEY (book_id)
-    REFERENCES public.books (id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION
-    NOT VALID;
 
-
-ALTER TABLE IF EXISTS public.book_lender
-    ADD CONSTRAINT fk_owner_id FOREIGN KEY (owner_id)
-    REFERENCES public.lender (id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION
-    NOT VALID;
-
-END;

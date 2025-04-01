@@ -8,32 +8,45 @@ import (
 	"github.com/ehrktia/lendbook/internal/graph/model"
 )
 
-type User struct {
-	repo UserFetcher
-	l    *slog.Logger
+type Commander interface {
+	GetID
+	Create(ctx context.Context, owner data.User) (int64, error)
+	Update(ctx context.Context, owner data.UserWithNoBooks) (data.UserWithNoBooks, error)
 }
 
-func NewUser(repo UserFetcher, l *slog.Logger) User {
+type UserQuery interface {
+	GetID
+	GetBookByUserId(ctx context.Context, ownerId float64) ([]data.Book, error)
+	GetUsers(ctx context.Context) ([]data.User, error)
+	GetUserByEmail(ctx context.Context, email string) (int64, error)
+}
+
+type BookQuery interface {
+	GetBooks(ctx context.Context, of, limit int) ([]data.Book, error)
+}
+
+type GetID interface {
+	GetById(ctx context.Context, id float64) (data.User, error)
+}
+
+type User struct {
+	command Commander
+	query   UserQuery
+	l       *slog.Logger
+}
+
+func NewUser(command Commander, query UserQuery, l *slog.Logger) User {
 	l = l.WithGroup("app-layer-user")
 	return User{
-		repo: repo,
-		l:    l,
+		command: command,
+		query:   query,
+		l:       l,
 	}
 
 }
 
-type UserFetcher interface {
-	GetById(ctx context.Context, id float64) (data.User, error)
-	GetBookByUserId(ctx context.Context, ownerId float64) ([]data.Book, error)
-	GetUsers(ctx context.Context) ([]data.User, error)
-	Create(ctx context.Context, owner data.User) (int64, error)
-	Update(ctx context.Context, owner data.UserWithNoBooks) (data.UserWithNoBooks, error)
-	GetUserByEmail(ctx context.Context, email string) (int64, error)
-}
-
 func (o User) Create(ctx context.Context, user model.User) (
 	model.User, error) {
-
 	do := data.User{
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
@@ -41,7 +54,7 @@ func (o User) Create(ctx context.Context, user model.User) (
 		Active:    user.Active,
 		Books:     make([]data.BookList, 0),
 	}
-	userId, err := o.repo.Create(ctx, do)
+	userId, err := o.command.Create(ctx, do)
 	if err != nil {
 		o.l.LogAttrs(ctx, slog.LevelError, "error creating owner",
 			slog.String("error", err.Error()))
@@ -54,7 +67,7 @@ func (o User) Create(ctx context.Context, user model.User) (
 func (o User) GetById(ctx context.Context, id float64) (
 	model.User, error) {
 	// operate
-	ow, err := o.repo.GetById(ctx, id)
+	ow, err := o.query.GetById(ctx, id)
 	if err != nil {
 		o.l.LogAttrs(ctx, slog.LevelError, "error getting user by id",
 			slog.Float64("user-id", id),
@@ -97,14 +110,14 @@ func (o User) GetById(ctx context.Context, id float64) (
 
 func (o User) GetUserByEmail(ctx context.Context, email string) (
 	model.User, error) {
-	uid, err := o.repo.GetUserByEmail(ctx, email)
+	uid, err := o.query.GetUserByEmail(ctx, email)
 	if err != nil {
 		o.l.LogAttrs(ctx, slog.LevelError, "error fetching userid for email",
 			slog.String("error", err.Error()),
 			slog.String("user-email", email))
 		return model.User{}, err
 	}
-	u, err := o.repo.GetById(ctx, float64(uid))
+	u, err := o.query.GetById(ctx, float64(uid))
 	if err != nil {
 		o.l.LogAttrs(ctx, slog.LevelError, "error fetching user by id",
 			slog.String("error", err.Error()),

@@ -9,6 +9,13 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import CardActions from "@mui/material/CardActions";
 import Button from "@mui/material/Button";
+import axios from "axios"; 
+
+const client = axios.create({
+  baseURL:"http://localhost:8080/query",
+  timeout: 10,
+  timeoutErrorMessage: "request timeout",
+});
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: '#fff',
@@ -20,9 +27,6 @@ const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: '#1A2027',
   }),
 }));
-
-// eslint-disble-next-line
-const backgroundURL = "http://localhost:8080/query";
 
 export default function Lender() {
   return (
@@ -55,6 +59,14 @@ export default function Lender() {
                   <CardContent>
                     <Typography gutterBottom variant="h6" component="div">
                       Neelam-stupid book-1
+                      <Button variant="contained"
+                        onClick={()=>{client.get(`/user?ID=1`).then( (response)=>{
+                        console.log(response);
+                      console.log(response.status)}).catch((error)=>{
+                          console.log(error)
+                        }
+                         )}}>UserGet</Button>
+
                     </Typography>
                     <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                       This book takes an existing physics theory, fits in to 

@@ -21,9 +21,15 @@ type Book {
   updated: String
 }
 
+type BookList {
+  data: [Book]
+  prev: String!
+  next: String!
+}
+
 
 type Query {
-  books: [Book!]!
+  books: BookList!
   bookByOwnerId(id: Float!): [Book!]!
   users: [User!]!
   userById(id: Float!): User
