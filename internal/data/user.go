@@ -24,7 +24,7 @@ func NewUser(connPool *pg.Postgres) UserRepo {
 var ErrDuplicate = errors.New("duplicate data found in store")
 
 func (o UserRepo) GetById(
-	ctx context.Context, id float64) (User, error) {
+	ctx context.Context, id string) (User, error) {
 	reqCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	conn, err := o.connPool.GetConn(reqCtx)
@@ -89,7 +89,7 @@ func (o UserRepo) GetBookByUserId(
 }
 
 type BookList struct {
-	ID        int64  `json:"id"`
+	ID        string `json:"id"`
 	Title     string `json:"title"`
 	Author    string `json:"author"`
 	Edition   string `json:"edition"`
@@ -100,7 +100,7 @@ type BookList struct {
 }
 
 type User struct {
-	ID        int64      `json:"id"`
+	ID        string     `json:"id"`
 	FirstName string     `json:"firstName"`
 	LastName  string     `json:"lastName"`
 	Email     string     `json:"email"`
@@ -141,8 +141,8 @@ from
 var ErrCreateUser = errors.New("can not create owner")
 
 func (o UserRepo) Create(
-	ctx context.Context, owner User) (int64, error) {
-	var ownerId int64
+	ctx context.Context, owner User) (string, error) {
+	var ownerId string
 	reqCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	conn, err := o.connPool.GetConn(reqCtx)
@@ -164,7 +164,7 @@ VALUES(@first_name, @last_name, @email, @active,@version) returning id;`
 		if err != nil {
 			return err
 		}
-		ownerId, err = pgx.CollectExactlyOneRow(rows, pgx.RowTo[int64])
+		ownerId, err = pgx.CollectExactlyOneRow(rows, pgx.RowTo[string])
 		if err != nil {
 			return err
 		}
@@ -272,12 +272,12 @@ var ErrClosedTx = errors.New("tx is closed")
 var ErrTxRollBack = errors.New("tx commit rollback error")
 
 func (o UserRepo) GetUserByEmail(
-	ctx context.Context, email string) (int64, error) {
+	ctx context.Context, email string) (string, error) {
 	reqCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	conn, err := o.connPool.GetConn(reqCtx)
 	if err != nil {
-		return int64(0), err
+		return "", err
 	}
 	defer func() {
 		conn.Conn().Close(reqCtx)
@@ -290,14 +290,14 @@ func (o UserRepo) GetUserByEmail(
 	where email=@email;`
 	row, err := conn.Query(reqCtx, qGetUserByName, args)
 	if err != nil {
-		return 0, errClassify(err)
+		return "", errClassify(err)
 	}
-	id, err := pgx.CollectExactlyOneRow(row, pgx.RowTo[int64])
+	id, err := pgx.CollectExactlyOneRow(row, pgx.RowTo[string])
 	if err != nil {
-		return 0, errClassify(err)
+		return "", errClassify(err)
 	}
 	if ctx.Err() != nil {
-		return 0, ctx.Err()
+		return "", ctx.Err()
 	}
 	return id, nil
 

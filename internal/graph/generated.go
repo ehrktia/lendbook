@@ -64,10 +64,10 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		BookByOwnerID func(childComplexity int, id float64) int
+		BookByOwnerID func(childComplexity int, id string) int
 		Books         func(childComplexity int) int
 		UserByEmail   func(childComplexity int, email string) int
-		UserByID      func(childComplexity int, id float64) int
+		UserByID      func(childComplexity int, id string) int
 		Users         func(childComplexity int) int
 	}
 
@@ -84,9 +84,9 @@ type ComplexityRoot struct {
 
 type QueryResolver interface {
 	Books(ctx context.Context) (*model.BookList, error)
-	BookByOwnerID(ctx context.Context, id float64) ([]*model.Book, error)
+	BookByOwnerID(ctx context.Context, id string) ([]*model.Book, error)
 	Users(ctx context.Context) ([]*model.User, error)
-	UserByID(ctx context.Context, id float64) (*model.User, error)
+	UserByID(ctx context.Context, id string) (*model.User, error)
 	UserByEmail(ctx context.Context, email string) (*model.User, error)
 }
 
@@ -196,7 +196,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.BookByOwnerID(childComplexity, args["id"].(float64)), true
+		return e.complexity.Query.BookByOwnerID(childComplexity, args["id"].(string)), true
 
 	case "Query.books":
 		if e.complexity.Query.Books == nil {
@@ -227,7 +227,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.UserByID(childComplexity, args["id"].(float64)), true
+		return e.complexity.Query.UserByID(childComplexity, args["id"].(string)), true
 
 	case "Query.users":
 		if e.complexity.Query.Users == nil {
@@ -429,13 +429,13 @@ func (ec *executionContext) field_Query_bookByOwnerId_args(ctx context.Context, 
 func (ec *executionContext) field_Query_bookByOwnerId_argsID(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (float64, error) {
+) (string, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
 	if tmp, ok := rawArgs["id"]; ok {
-		return ec.unmarshalNFloat2float64(ctx, tmp)
+		return ec.unmarshalNString2string(ctx, tmp)
 	}
 
-	var zeroVal float64
+	var zeroVal string
 	return zeroVal, nil
 }
 
@@ -475,13 +475,13 @@ func (ec *executionContext) field_Query_userById_args(ctx context.Context, rawAr
 func (ec *executionContext) field_Query_userById_argsID(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (float64, error) {
+) (string, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
 	if tmp, ok := rawArgs["id"]; ok {
-		return ec.unmarshalNFloat2float64(ctx, tmp)
+		return ec.unmarshalNString2string(ctx, tmp)
 	}
 
-	var zeroVal float64
+	var zeroVal string
 	return zeroVal, nil
 }
 
@@ -611,9 +611,9 @@ func (ec *executionContext) _Book_id(ctx context.Context, field graphql.Collecte
 		}
 		return graphql.Null
 	}
-	res := resTmp.(float64)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Book_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -623,7 +623,7 @@ func (ec *executionContext) fieldContext_Book_id(_ context.Context, field graphq
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Float does not have child fields")
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -1144,7 +1144,7 @@ func (ec *executionContext) _Query_bookByOwnerId(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().BookByOwnerID(rctx, fc.Args["id"].(float64))
+		return ec.resolvers.Query().BookByOwnerID(rctx, fc.Args["id"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1277,7 +1277,7 @@ func (ec *executionContext) _Query_userById(ctx context.Context, field graphql.C
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().UserByID(rctx, fc.Args["id"].(float64))
+		return ec.resolvers.Query().UserByID(rctx, fc.Args["id"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1556,9 +1556,9 @@ func (ec *executionContext) _User_id(ctx context.Context, field graphql.Collecte
 		}
 		return graphql.Null
 	}
-	res := resTmp.(float64)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_User_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1568,7 +1568,7 @@ func (ec *executionContext) fieldContext_User_id(_ context.Context, field graphq
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Float does not have child fields")
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil

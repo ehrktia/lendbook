@@ -1,7 +1,7 @@
 
 
 type User {
-  id : Float!
+  id : String!
   firstName: String!
   lastName: String!
   email: String!
@@ -11,7 +11,7 @@ type User {
 }
 
 type Book {
-  id: Float!
+  id: String!
   title: String!
   author: String!
   edition: String!
@@ -30,8 +30,8 @@ type BookList {
 
 type Query {
   books: BookList!
-  bookByOwnerId(id: Float!): [Book!]!
+  bookByOwnerId(id: String!): [Book!]!
   users: [User!]!
-  userById(id: Float!): User
+  userById(id: String!): User
   userByEmail(email: String!): User
 }

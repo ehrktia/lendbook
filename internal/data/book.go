@@ -21,7 +21,7 @@ func NewBook(connPool *pg.Postgres) *BookRepo {
 }
 
 type Book struct {
-	ID        int64     `json:"id"`
+	ID        string    `json:"id"`
 	Title     string    `json:"title"`
 	Author    string    `json:"author"`
 	Edition   string    `json:"edition"`
@@ -45,7 +45,7 @@ func (b BookRepo) GetBooks(ctx context.Context, of, limit int) ([]Book, error) {
 		conn.Release()
 	}()
 	var query = `select * from books offset @offset limit @limit`
-	args := pgx.NamedArgs{"offset": 0, "limit": 10}
+	args := pgx.NamedArgs{"offset": of, "limit": limit}
 	rows, err := conn.Query(reqCtx, query, args)
 	if err != nil {
 		switch {

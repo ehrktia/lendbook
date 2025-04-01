@@ -17,7 +17,7 @@ func (r *queryResolver) Books(ctx context.Context) (*model1.BookList, error) {
 }
 
 // BookByOwnerID is the resolver for the bookByOwnerId field.
-func (r *queryResolver) BookByOwnerID(ctx context.Context, id float64) ([]*model1.Book, error) {
+func (r *queryResolver) BookByOwnerID(ctx context.Context, id string) ([]*model1.Book, error) {
 	panic(fmt.Errorf("not implemented: BookByOwnerID - bookByOwnerId"))
 }
 
@@ -27,7 +27,7 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model1.User, error) {
 }
 
 // UserByID is the resolver for the userById field.
-func (r *queryResolver) UserByID(ctx context.Context, id float64) (*model1.User, error) {
+func (r *queryResolver) UserByID(ctx context.Context, id string) (*model1.User, error) {
 	user, err := r.UserService.GetById(ctx, id)
 	if err != nil {
 		return nil, err

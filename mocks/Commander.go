@@ -23,22 +23,22 @@ func (_m *Commander) EXPECT() *Commander_Expecter {
 }
 
 // Create provides a mock function with given fields: ctx, owner
-func (_m *Commander) Create(ctx context.Context, owner data.User) (int64, error) {
+func (_m *Commander) Create(ctx context.Context, owner data.User) (string, error) {
 	ret := _m.Called(ctx, owner)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Create")
 	}
 
-	var r0 int64
+	var r0 string
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, data.User) (int64, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, data.User) (string, error)); ok {
 		return rf(ctx, owner)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, data.User) int64); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, data.User) string); ok {
 		r0 = rf(ctx, owner)
 	} else {
-		r0 = ret.Get(0).(int64)
+		r0 = ret.Get(0).(string)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, data.User) error); ok {
@@ -69,18 +69,18 @@ func (_c *Commander_Create_Call) Run(run func(ctx context.Context, owner data.Us
 	return _c
 }
 
-func (_c *Commander_Create_Call) Return(_a0 int64, _a1 error) *Commander_Create_Call {
+func (_c *Commander_Create_Call) Return(_a0 string, _a1 error) *Commander_Create_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *Commander_Create_Call) RunAndReturn(run func(context.Context, data.User) (int64, error)) *Commander_Create_Call {
+func (_c *Commander_Create_Call) RunAndReturn(run func(context.Context, data.User) (string, error)) *Commander_Create_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // GetById provides a mock function with given fields: ctx, id
-func (_m *Commander) GetById(ctx context.Context, id float64) (data.User, error) {
+func (_m *Commander) GetById(ctx context.Context, id string) (data.User, error) {
 	ret := _m.Called(ctx, id)
 
 	if len(ret) == 0 {
@@ -89,16 +89,16 @@ func (_m *Commander) GetById(ctx context.Context, id float64) (data.User, error)
 
 	var r0 data.User
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, float64) (data.User, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) (data.User, error)); ok {
 		return rf(ctx, id)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, float64) data.User); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) data.User); ok {
 		r0 = rf(ctx, id)
 	} else {
 		r0 = ret.Get(0).(data.User)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, float64) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
 		r1 = rf(ctx, id)
 	} else {
 		r1 = ret.Error(1)
@@ -114,14 +114,14 @@ type Commander_GetById_Call struct {
 
 // GetById is a helper method to define mock.On call
 //   - ctx context.Context
-//   - id float64
+//   - id string
 func (_e *Commander_Expecter) GetById(ctx interface{}, id interface{}) *Commander_GetById_Call {
 	return &Commander_GetById_Call{Call: _e.mock.On("GetById", ctx, id)}
 }
 
-func (_c *Commander_GetById_Call) Run(run func(ctx context.Context, id float64)) *Commander_GetById_Call {
+func (_c *Commander_GetById_Call) Run(run func(ctx context.Context, id string)) *Commander_GetById_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(float64))
+		run(args[0].(context.Context), args[1].(string))
 	})
 	return _c
 }
@@ -131,7 +131,7 @@ func (_c *Commander_GetById_Call) Return(_a0 data.User, _a1 error) *Commander_Ge
 	return _c
 }
 
-func (_c *Commander_GetById_Call) RunAndReturn(run func(context.Context, float64) (data.User, error)) *Commander_GetById_Call {
+func (_c *Commander_GetById_Call) RunAndReturn(run func(context.Context, string) (data.User, error)) *Commander_GetById_Call {
 	_c.Call.Return(run)
 	return _c
 }

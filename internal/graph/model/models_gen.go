@@ -3,7 +3,7 @@
 package model
 
 type Book struct {
-	ID        float64 `json:"id"`
+	ID        string  `json:"id"`
 	Title     string  `json:"title"`
 	Author    string  `json:"author"`
 	Edition   string  `json:"edition"`
@@ -23,7 +23,7 @@ type Query struct {
 }
 
 type User struct {
-	ID        float64 `json:"id"`
+	ID        string  `json:"id"`
 	FirstName string  `json:"firstName"`
 	LastName  string  `json:"lastName"`
 	Email     string  `json:"email"`

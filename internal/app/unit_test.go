@@ -32,7 +32,7 @@ func TestGetUserByEmailError(t *testing.T) {
 				mockUserDataStore.
 					EXPECT().
 					GetUserByEmail(ctx, "first.last@email.com").
-					Return(int64(0), data.ErrNodata)
+					Return("", data.ErrNodata)
 				return mockUserDataStore
 			},
 		},
@@ -46,7 +46,7 @@ func TestGetUserByEmailError(t *testing.T) {
 				mockUserDataStore := mocks.NewUserQuery(t)
 				mockUserDataStore.
 					EXPECT().GetUserByEmail(ctx, "first.last@email.com").
-					Return(int64(0), ctx.Err())
+					Return("", ctx.Err())
 				return mockUserDataStore
 			},
 		},
@@ -59,7 +59,7 @@ func TestGetUserByEmailError(t *testing.T) {
 				mockUserDataStore := mocks.NewUserQuery(t)
 				mockUserDataStore.
 					EXPECT().GetUserByEmail(ctx, "first.last@email.com").
-					Return(int64(0),
+					Return("",
 						&pgconn.PgError{Code: t.Name(), Message: t.Name()})
 				return mockUserDataStore
 			},

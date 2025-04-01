@@ -23,7 +23,7 @@ func (_m *GetID) EXPECT() *GetID_Expecter {
 }
 
 // GetById provides a mock function with given fields: ctx, id
-func (_m *GetID) GetById(ctx context.Context, id float64) (data.User, error) {
+func (_m *GetID) GetById(ctx context.Context, id string) (data.User, error) {
 	ret := _m.Called(ctx, id)
 
 	if len(ret) == 0 {
@@ -32,16 +32,16 @@ func (_m *GetID) GetById(ctx context.Context, id float64) (data.User, error) {
 
 	var r0 data.User
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, float64) (data.User, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) (data.User, error)); ok {
 		return rf(ctx, id)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, float64) data.User); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) data.User); ok {
 		r0 = rf(ctx, id)
 	} else {
 		r0 = ret.Get(0).(data.User)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, float64) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
 		r1 = rf(ctx, id)
 	} else {
 		r1 = ret.Error(1)
@@ -57,14 +57,14 @@ type GetID_GetById_Call struct {
 
 // GetById is a helper method to define mock.On call
 //   - ctx context.Context
-//   - id float64
+//   - id string
 func (_e *GetID_Expecter) GetById(ctx interface{}, id interface{}) *GetID_GetById_Call {
 	return &GetID_GetById_Call{Call: _e.mock.On("GetById", ctx, id)}
 }
 
-func (_c *GetID_GetById_Call) Run(run func(ctx context.Context, id float64)) *GetID_GetById_Call {
+func (_c *GetID_GetById_Call) Run(run func(ctx context.Context, id string)) *GetID_GetById_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(float64))
+		run(args[0].(context.Context), args[1].(string))
 	})
 	return _c
 }
@@ -74,7 +74,7 @@ func (_c *GetID_GetById_Call) Return(_a0 data.User, _a1 error) *GetID_GetById_Ca
 	return _c
 }
 
-func (_c *GetID_GetById_Call) RunAndReturn(run func(context.Context, float64) (data.User, error)) *GetID_GetById_Call {
+func (_c *GetID_GetById_Call) RunAndReturn(run func(context.Context, string) (data.User, error)) *GetID_GetById_Call {
 	_c.Call.Return(run)
 	return _c
 }
