@@ -8,7 +8,7 @@ type Book struct {
 	Author    string  `json:"author"`
 	Edition   string  `json:"edition"`
 	Available bool    `json:"available"`
-	OwnerID   float64 `json:"ownerId"`
+	OwnerID   string  `json:"ownerId"`
 	Added     *string `json:"added,omitempty"`
 	Updated   *string `json:"updated,omitempty"`
 }

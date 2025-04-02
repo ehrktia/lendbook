@@ -16,29 +16,29 @@ alter table public.owner owner to postgres;
 grant all on
 table public.owner to postgres;
 
-create table public.book (
-	id uuid default gen_random_uuid() not null,
-	title varchar(255) not null,
-	author varchar(255) not null,
-	edition varchar(50) null,
-	owner_id uuid references owner(id) on
-update
-	restrict on
-	delete
-		restrict,
-		available bool default false,
-		added timestamp default (now() at time zone 'utc'),
-		updated timestamp default (now() at time zone 'utc'),
-		constraint pk_book_id primary key (id)
+-- public.book definition
+
+-- Drop table
+
+-- DROP TABLE public.book;
+
+CREATE TABLE public.book (
+	id uuid DEFAULT gen_random_uuid() NOT NULL,
+	title varchar(255) NOT NULL,
+	author varchar(255) NOT NULL,
+	edition varchar(50) NULL,
+	owner_id uuid NULL,
+	available bool DEFAULT true NULL,
+	added timestamp DEFAULT (now() AT TIME ZONE 'utc'::text) NULL,
+	updated timestamp DEFAULT (now() AT TIME ZONE 'utc'::text) NULL,
+	CONSTRAINT pk_book_id PRIMARY KEY (id)
 );
+COMMENT ON TABLE public.book IS 'holds books data';
 
-comment on
-table public.book is 'holds books data';
 -- Permissions
-alter table public.book owner to postgres;
 
-grant all on
-table public.book to postgres;
+ALTER TABLE public.book OWNER TO postgres;
+GRANT ALL ON TABLE public.book TO postgres;
 
 
 

@@ -26,14 +26,15 @@ type Book struct {
 	Author    string    `json:"author"`
 	Edition   string    `json:"edition"`
 	Available bool      `json:"available"`
-	OwnerID   int64     `json:"ownerId"`
+	OwnerID   string    `json:"ownerId"`
 	Added     time.Time `json:"added"`
 	Updated   time.Time `json:"updated"`
 }
 
 var ErrNodata = fmt.Errorf("%s", "no data found")
 
-func (b BookRepo) GetBooks(ctx context.Context, of, limit int) ([]Book, error) {
+func (b BookRepo) GetBooks(
+	ctx context.Context, of, limit int) ([]Book, error) {
 	reqCtx, cancel := context.WithTimeout(ctx, 2*time.Second)
 	defer cancel()
 	conn, err := b.connPool.GetConn(reqCtx)
@@ -44,7 +45,7 @@ func (b BookRepo) GetBooks(ctx context.Context, of, limit int) ([]Book, error) {
 		conn.Conn().Close(reqCtx)
 		conn.Release()
 	}()
-	var query = `select * from books offset @offset limit @limit`
+	var query = `select * from book offset @offset limit @limit`
 	args := pgx.NamedArgs{"offset": of, "limit": limit}
 	rows, err := conn.Query(reqCtx, query, args)
 	if err != nil {
@@ -62,7 +63,7 @@ func (b BookRepo) GetBooks(ctx context.Context, of, limit int) ([]Book, error) {
 	return books, nil
 }
 
-var queryBookOwnerId = `select * from books where owner_id=$1`
+var queryBookOwnerId = `select * from book where owner_id=$1`
 
 func (b BookRepo) GetBooksByOwnerId(
 	ctx context.Context, ownerId float64) ([]Book, error) {

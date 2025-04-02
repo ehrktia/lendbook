@@ -3,7 +3,6 @@ package app
 import (
 	"context"
 	"errors"
-	"log/slog"
 	"strings"
 	"testing"
 
@@ -12,10 +11,8 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
-var ctx, cancel = context.WithCancel(context.Background())
-var l = slog.Default()
-
 func TestGetUserByEmailError(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
 	tests := []struct {
 		name   string
 		email  string

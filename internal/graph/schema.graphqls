@@ -16,7 +16,7 @@ type Book {
   author: String!
   edition: String!
   available: Boolean!
-  ownerId: Float!
+  ownerId: String!
   added: String
   updated: String
 }

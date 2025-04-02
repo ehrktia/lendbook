@@ -68,7 +68,7 @@ func (o UserRepo) GetBookByUserId(
 		conn.Conn().Close(ctx)
 		conn.Release()
 	}()
-	queryBookByUserId := `select * from books where owner_id=$1`
+	queryBookByUserId := `select * from book where owner_id=$1`
 	rows, err := conn.Query(ctx, queryBookByUserId, ownerId)
 	if err != nil {
 		switch {
@@ -124,7 +124,7 @@ func (o UserRepo) GetUsers(ctx context.Context) ([]User, error) {
 	qGetUsersBooks := `select
 	*
 from
-	owner_with_books owb;`
+	owner owb;`
 	rows, err := conn.Query(reqCtx, qGetUsersBooks)
 	if err != nil {
 		return nil, errClassify(err)
@@ -180,7 +180,7 @@ values( @fname, @lname, @email) returning id;`
 }
 
 type UserWithNoBooks struct {
-	ID        int64  `json:"id"`
+	ID        string `json:"id"`
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 	Email     string `json:"email"`

@@ -22,17 +22,35 @@ func NewBook(query BookQuery, l *slog.Logger) Book {
 	}
 }
 
-func (b Book) GetAll(ctx context.Context, o, l string) ([]model.BookList, error) {
+func (b Book) GetAll(ctx context.Context, o, l string) (model.BookList, error) {
 	of, err := toInt(o)
 	if err != nil {
-		return nil, err
+		return model.BookList{}, err
 	}
 	limit, err := toInt(l)
 	if err != nil {
-		return nil, err
+		return model.BookList{}, err
 	}
-	_, _ = b.query.GetBooks(ctx, of, limit)
-	return []model.BookList{}, nil
+	books, err := b.query.GetBooks(ctx, of, limit)
+	if err != nil {
+		return model.BookList{}, err
+	}
+	return populateBookResults(books, of, limit), nil
+
+}
+
+func populateBookResults(books []data.Book, p, limit int) model.BookList {
+	b := make([]*model.Book, len(books))
+	for i, v := range books {
+		bookModel := toBookModel(v)
+		b[i] = &bookModel
+	}
+	r := model.BookList{
+		Data: b,
+		Prev: strconv.Itoa(p),
+		Next: strconv.Itoa(limit + 1),
+	}
+	return r
 }
 
 func toInt(in string) (int, error) {
@@ -48,7 +66,7 @@ func toBookModel(in data.Book) model.Book {
 		Author:    in.Author,
 		Edition:   in.Edition,
 		Available: in.Available,
-		OwnerID:   float64(in.OwnerID),
+		OwnerID:   in.OwnerID,
 		Added:     &add,
 		Updated:   &upd,
 	}
