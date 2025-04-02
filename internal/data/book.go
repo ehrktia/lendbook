@@ -63,6 +63,29 @@ func (b BookRepo) GetBooks(
 	return books, nil
 }
 
+func (b BookRepo) GetBookCount(ctx context.Context) (int, error) {
+	reqCtx, cancel := context.WithTimeout(ctx, 2*time.Second)
+	defer cancel()
+	conn, err := b.connPool.GetConn(reqCtx)
+	if err != nil {
+		return 0, err
+	}
+	defer func() {
+		conn.Conn().Close(reqCtx)
+		conn.Release()
+	}()
+	q := `select count(id) from book;`
+	rows, err := conn.Query(reqCtx, q)
+	if err != nil {
+		return 0, errClassify(err)
+	}
+	tot, err := pgx.CollectOneRow(rows, pgx.RowTo[int])
+	if err != nil {
+		return 0, errClassify(err)
+	}
+	return tot, nil
+}
+
 var queryBookOwnerId = `select * from book where owner_id=$1`
 
 func (b BookRepo) GetBooksByOwnerId(

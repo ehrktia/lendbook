@@ -23,6 +23,7 @@ type UserQuery interface {
 
 type BookQuery interface {
 	GetBooks(ctx context.Context, of, limit int) ([]data.Book, error)
+	GetBookCount(ctx context.Context) (int, error)
 }
 
 type GetID interface {

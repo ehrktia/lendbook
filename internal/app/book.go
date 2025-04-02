@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"strconv"
+	"time"
 
 	"codeberg.org/ehrktia/lendbook/internal/data"
 	"codeberg.org/ehrktia/lendbook/internal/graph/model"
@@ -22,33 +23,42 @@ func NewBook(query BookQuery, l *slog.Logger) Book {
 	}
 }
 
-func (b Book) GetAll(ctx context.Context, o, l string) (model.BookList, error) {
+func (b Book) GetAll(
+	ctx context.Context, o, l string) (*model.BookList, error) {
+	reqCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
 	of, err := toInt(o)
 	if err != nil {
-		return model.BookList{}, err
+		return nil, err
 	}
 	limit, err := toInt(l)
 	if err != nil {
-		return model.BookList{}, err
+		return nil, err
+	}
+	tot, err := b.query.GetBookCount(reqCtx)
+	if err != nil {
+		return nil, err
 	}
 	books, err := b.query.GetBooks(ctx, of, limit)
 	if err != nil {
-		return model.BookList{}, err
+		return nil, err
 	}
-	return populateBookResults(books, of, limit), nil
-
+	return populateBookResults(books, of, limit, tot), nil
 }
 
-func populateBookResults(books []data.Book, p, limit int) model.BookList {
+func populateBookResults(
+	books []data.Book, p, limit, tot int) *model.BookList {
 	b := make([]*model.Book, len(books))
 	for i, v := range books {
 		bookModel := toBookModel(v)
 		b[i] = &bookModel
 	}
-	r := model.BookList{
-		Data: b,
-		Prev: strconv.Itoa(p),
-		Next: strconv.Itoa(limit + 1),
+	next := p + limit
+	r := &model.BookList{
+		Data:  b,
+		Prev:  strconv.Itoa(p),
+		Next:  strconv.Itoa(min(next, tot)),
+		Total: strconv.Itoa(tot),
 	}
 	return r
 }

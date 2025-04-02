@@ -213,3 +213,16 @@ func cleanUp() error {
 	return nil
 
 }
+
+func TestBookTotal(t *testing.T) {
+	tCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	book := NewBook(pool)
+	tot, err := book.GetTotal(tCtx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if tot < 1 {
+		t.Fatalf("expected:%d\tgot:%d\n", 1, tot)
+	}
+}

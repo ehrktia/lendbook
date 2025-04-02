@@ -25,11 +25,12 @@ type BookList {
   data: [Book]
   prev: String!
   next: String!
+  total: String!
 }
 
 
 type Query {
-  books: BookList!
+  books(offset: String!,limit: String!): BookList!
   bookByOwnerId(id: String!): [Book!]!
   users: [User!]!
   userById(id: String!): User

@@ -22,6 +22,62 @@ func (_m *BookQuery) EXPECT() *BookQuery_Expecter {
 	return &BookQuery_Expecter{mock: &_m.Mock}
 }
 
+// GetBookCount provides a mock function with given fields: ctx
+func (_m *BookQuery) GetBookCount(ctx context.Context) (int, error) {
+	ret := _m.Called(ctx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetBookCount")
+	}
+
+	var r0 int
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context) (int, error)); ok {
+		return rf(ctx)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context) int); ok {
+		r0 = rf(ctx)
+	} else {
+		r0 = ret.Get(0).(int)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// BookQuery_GetBookCount_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetBookCount'
+type BookQuery_GetBookCount_Call struct {
+	*mock.Call
+}
+
+// GetBookCount is a helper method to define mock.On call
+//   - ctx context.Context
+func (_e *BookQuery_Expecter) GetBookCount(ctx interface{}) *BookQuery_GetBookCount_Call {
+	return &BookQuery_GetBookCount_Call{Call: _e.mock.On("GetBookCount", ctx)}
+}
+
+func (_c *BookQuery_GetBookCount_Call) Run(run func(ctx context.Context)) *BookQuery_GetBookCount_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context))
+	})
+	return _c
+}
+
+func (_c *BookQuery_GetBookCount_Call) Return(_a0 int, _a1 error) *BookQuery_GetBookCount_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *BookQuery_GetBookCount_Call) RunAndReturn(run func(context.Context) (int, error)) *BookQuery_GetBookCount_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetBooks provides a mock function with given fields: ctx, of, limit
 func (_m *BookQuery) GetBooks(ctx context.Context, of int, limit int) ([]data.Book, error) {
 	ret := _m.Called(ctx, of, limit)

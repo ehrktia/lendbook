@@ -58,14 +58,15 @@ type ComplexityRoot struct {
 	}
 
 	BookList struct {
-		Data func(childComplexity int) int
-		Next func(childComplexity int) int
-		Prev func(childComplexity int) int
+		Data  func(childComplexity int) int
+		Next  func(childComplexity int) int
+		Prev  func(childComplexity int) int
+		Total func(childComplexity int) int
 	}
 
 	Query struct {
 		BookByOwnerID func(childComplexity int, id string) int
-		Books         func(childComplexity int) int
+		Books         func(childComplexity int, offset string, limit string) int
 		UserByEmail   func(childComplexity int, email string) int
 		UserByID      func(childComplexity int, id string) int
 		Users         func(childComplexity int) int
@@ -83,7 +84,7 @@ type ComplexityRoot struct {
 }
 
 type QueryResolver interface {
-	Books(ctx context.Context) (*model.BookList, error)
+	Books(ctx context.Context, offset string, limit string) (*model.BookList, error)
 	BookByOwnerID(ctx context.Context, id string) ([]*model.Book, error)
 	Users(ctx context.Context) ([]*model.User, error)
 	UserByID(ctx context.Context, id string) (*model.User, error)
@@ -186,6 +187,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.BookList.Prev(childComplexity), true
 
+	case "BookList.total":
+		if e.complexity.BookList.Total == nil {
+			break
+		}
+
+		return e.complexity.BookList.Total(childComplexity), true
+
 	case "Query.bookByOwnerId":
 		if e.complexity.Query.BookByOwnerID == nil {
 			break
@@ -203,7 +211,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.Query.Books(childComplexity), true
+		args, err := ec.field_Query_books_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Books(childComplexity, args["offset"].(string), args["limit"].(string)), true
 
 	case "Query.userByEmail":
 		if e.complexity.Query.UserByEmail == nil {
@@ -432,6 +445,47 @@ func (ec *executionContext) field_Query_bookByOwnerId_argsID(
 ) (string, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
 	if tmp, ok := rawArgs["id"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_books_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Query_books_argsOffset(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["offset"] = arg0
+	arg1, err := ec.field_Query_books_argsLimit(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["limit"] = arg1
+	return args, nil
+}
+func (ec *executionContext) field_Query_books_argsOffset(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (string, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
+	if tmp, ok := rawArgs["offset"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_books_argsLimit(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (string, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+	if tmp, ok := rawArgs["limit"]; ok {
 		return ec.unmarshalNString2string(ctx, tmp)
 	}
 
@@ -1078,6 +1132,50 @@ func (ec *executionContext) fieldContext_BookList_next(_ context.Context, field 
 	return fc, nil
 }
 
+func (ec *executionContext) _BookList_total(ctx context.Context, field graphql.CollectedField, obj *model.BookList) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BookList_total(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Total, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BookList_total(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BookList",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_books(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_books(ctx, field)
 	if err != nil {
@@ -1092,7 +1190,7 @@ func (ec *executionContext) _Query_books(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Books(rctx)
+		return ec.resolvers.Query().Books(rctx, fc.Args["offset"].(string), fc.Args["limit"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1109,7 +1207,7 @@ func (ec *executionContext) _Query_books(ctx context.Context, field graphql.Coll
 	return ec.marshalNBookList2ᚖcodebergᚗorgᚋehrktiaᚋlendbookᚋinternalᚋgraphᚋmodelᚐBookList(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_books(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_books(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -1123,9 +1221,22 @@ func (ec *executionContext) fieldContext_Query_books(_ context.Context, field gr
 				return ec.fieldContext_BookList_prev(ctx, field)
 			case "next":
 				return ec.fieldContext_BookList_next(ctx, field)
+			case "total":
+				return ec.fieldContext_BookList_total(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type BookList", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_books_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -3900,6 +4011,11 @@ func (ec *executionContext) _BookList(ctx context.Context, sel ast.SelectionSet,
 			}
 		case "next":
 			out.Values[i] = ec._BookList_next(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "total":
+			out.Values[i] = ec._BookList_total(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

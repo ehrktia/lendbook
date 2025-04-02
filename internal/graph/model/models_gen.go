@@ -14,9 +14,10 @@ type Book struct {
 }
 
 type BookList struct {
-	Data []*Book `json:"data,omitempty"`
-	Prev string  `json:"prev"`
-	Next string  `json:"next"`
+	Data  []*Book `json:"data,omitempty"`
+	Prev  string  `json:"prev"`
+	Next  string  `json:"next"`
+	Total string  `json:"total"`
 }
 
 type Query struct {

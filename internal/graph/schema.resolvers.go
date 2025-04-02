@@ -12,8 +12,8 @@ import (
 )
 
 // Books is the resolver for the books field.
-func (r *queryResolver) Books(ctx context.Context) (*model1.BookList, error) {
-	panic(fmt.Errorf("not implemented: Books - books"))
+func (r *queryResolver) Books(ctx context.Context, offset string, limit string) (*model1.BookList, error) {
+	return r.BookService.GetAll(ctx, offset, limit)
 }
 
 // BookByOwnerID is the resolver for the bookByOwnerId field.
