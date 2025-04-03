@@ -46,7 +46,6 @@ func Run(ctx context.Context, l *slog.Logger) error {
 				slog.String("error", err.Error()))
 			os.Exit(1)
 		}
-
 	}()
 	return httpServer.ListenAndServe()
 }

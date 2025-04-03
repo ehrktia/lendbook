@@ -11,12 +11,6 @@ import CardActions from "@mui/material/CardActions";
 import Button from "@mui/material/Button";
 import axios from "axios"; 
 
-const client = axios.create({
-  baseURL:"http://localhost:8080/query",
-  timeout: 10,
-  timeoutErrorMessage: "request timeout",
-});
-
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: '#fff',
   ...theme.typography.body2,
@@ -60,12 +54,26 @@ export default function Lender() {
                     <Typography gutterBottom variant="h6" component="div">
                       Neelam-stupid book-1
                       <Button variant="contained"
-                        onClick={()=>{client.get(`/user?ID=1`).then( (response)=>{
-                        console.log(response);
-                      console.log(response.status)}).catch((error)=>{
-                          console.log(error)
-                        }
-                         )}}>UserGet</Button>
+                        onClick={()=>{
+                          axios({url:"http://localhost:8080/query",
+                          method: 'POST',
+                          headers: {"content-type": "application/json"},
+                          responseType:'json',
+                          data: {
+                            query: `{
+                                  books(offset: "0", limit: "5") {
+                                    data {
+                                      title
+                                      author
+                                    }
+                                    prev
+                                    next
+                                    total
+                                  }
+                                }`
+                          },
+                        }).then((result)=>{console.log(result.data)})
+                        }}>BookList</Button>
 
                     </Typography>
                     <Typography variant="body2" sx={{ color: 'text.secondary' }}>
