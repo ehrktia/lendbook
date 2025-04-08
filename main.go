@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/ehrktia/lendbook/infra"
+	"codeberg.org/ehrktia/lendbook/infra"
 )
 
 func main() {
@@ -31,4 +31,3 @@ func JsonLogger(w io.Writer) *slog.Logger {
 	l := slog.New(h)
 	return l
 }
-

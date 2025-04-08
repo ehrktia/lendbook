@@ -1,14 +1,17 @@
 import { Container, Box } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
-import { NavLink } from "react-router";
+import { data, NavLink } from "react-router";
 import Grid from '@mui/material/Grid2';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Typography from '@mui/material/Typography';
-import CardActions from "@mui/material/CardActions";
-import Button from "@mui/material/Button";
+// import Card from '@mui/material/Card';
+// import CardContent from '@mui/material/CardContent';
+// import CardMedia from '@mui/material/CardMedia';
+// import Typography from '@mui/material/Typography';
+// import CardActions from "@mui/material/CardActions";
+// import Button from "@mui/material/Button";
+import axios from "axios"; 
+import * as gqlType from "./gql/graphql"
+// import createHttpError from "http-errors";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: '#fff',
@@ -21,10 +24,61 @@ const Item = styled(Paper)(({ theme }) => ({
   }),
 }));
 
-// eslint-disble-next-line
 const backgroundURL = "http://localhost:8080/query";
 
+
+async function getBooks(){
+  return axios({url:backgroundURL,
+    method:'POST',
+  data:{
+    query: `{
+          books(offset: "0", limit: "15") {
+            data {
+              title
+              author
+            }
+            prev
+            next
+            total
+          }
+        }`
+      }})
+}
+
+function extractJSON(r :any) {
+  const jsonResult :any= JSON.stringify(r)
+  return JSON.parse(jsonResult);
+}
+
+function getBookList(jsonData :any) :any{
+  const bookList :any=jsonData.data.data.books.data as gqlType.BookList
+  const totBooks :bigint=bookList.length
+  const prev :bigint=  jsonData.data.data.books.prev
+  const next :bigint=  jsonData.data.data.books.next
+  const total :bigint = jsonData.data.data.books.total
+  return {
+    books: bookList,
+    len: totBooks,
+    prev: prev,
+    next: next,
+    total:total,
+  }
+}
+
 export default function Lender() {
+    getBooks().then(response=>{
+    const jsonValue = extractJSON(response)
+    const books = getBookList(jsonValue)
+      console.log("data list:",books)
+        })
+      // const response = await getBooks()
+    //   response.catch(error=>error)
+    //   const dataList = response.then(data=>{
+    //     const jsonData = extractJSON(data)
+    //     const dataValues = getBookList(jsonData)
+    //     console.log(dataValues.books)
+    //           })
+    // console.log("datalist:",dataList)
   return (
     <div className="lender">
       <Container>
@@ -41,118 +95,13 @@ export default function Lender() {
             </Grid>
           </Grid>
         </Box>
-        <Grid paddingY={2}></Grid>
-        <Box sx={{ flexGrow: 1 }}>
-          <Grid container spacing={4}>
-            <Grid size={3}>
-              <Item>
-                <Card sx={{ maxWidth: 345 }}>
-                  <CardMedia
-                    sx={{ height: 150 }}
-                    image="/book_1_cover.jpg"
-                    title="Neelam-stupid book"
-                  />
-                  <CardContent>
-                    <Typography gutterBottom variant="h6" component="div">
-                      Neelam-stupid book-1
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      This book takes an existing physics theory, fits in to 
-                      real life with scenarios
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Box sx={{ flexGrow: 1 }}>
-                      <Button size="small" 
-                      onClick={() =>{ alert ("clicked edit");}}>Edit</Button>
-                      <Button size="small" 
-                      onClick={() =>{ window.alert ("are you sure");}}>Remove</Button>
-                    </Box>
-                  </CardActions>
-                </Card>
-              </Item>
-            </Grid>
-            <Grid size={3}>
-              <Item>
-                <Card sx={{ maxWidth: 345 }}>
-                  <CardMedia
-                    sx={{ height: 150 }}
-                    image="/book_2_cover.jpg"
-                    title="Neelam stupid book 2"
-                  />
-                  <CardContent>
-                    <Typography gutterBottom variant="h6" component="div">
-                      Neelam stupid book version-2
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      This book takes an existing physics theory and update it
-                      with real life scenarios
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Box sx={{ flexGrow: 1 }}>
-                      <Button size="small">Edit</Button>
-                      <Button size="small">Remove</Button>
-                    </Box>
-                  </CardActions>
-                </Card>
-              </Item>
-            </Grid>
-            <Grid size={3}>
-              <Item>
-                <Card sx={{ maxWidth: 345 }}>
-                  <CardMedia
-                    sx={{ height: 150 }}
-                    image="/book_3_cover.jpg"
-                    title="neelam stupid book-3.0"
-                  />
-                  <CardContent>
-                    <Typography gutterBottom variant="h6" component="div">
-                      Neelam stupid book 3.0
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      This is 3rd version of neelam stupid book, enhanced 
-                      examples of the life matching physics theory
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Box sx={{ flexGrow: 1 }}>
-                      <Button size="small">Edit</Button>
-                      <Button size="small">Remove</Button>
-                    </Box>
-                  </CardActions>
-                </Card>
-              </Item>
-            </Grid>
-            <Grid size={3}>
-              <Item>
-                <Card sx={{ maxWidth: 345 }}>
-                  <CardMedia
-                    sx={{ height: 150 }}
-                    image="/lizard.jpg"
-                    title="neelam book on astrology"
-                  />
-                  <CardContent>
-                    <Typography gutterBottom variant="h6" component="div">
-                      Neelam Astrology Book-4
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      This book explains why saturn rules your life and not 
-                      free will
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Box sx={{ flexGrow: 1 }}>
-                      <Button size="small">Edit</Button>
-                      <Button size="small">Remove</Button>
-                    </Box>
-                  </CardActions>
-                </Card>
-              </Item>
-            </Grid>
-          </Grid>
-        </Box>
       </Container>
+    <div className = "bookList">
+      <Container>
+    <Box sx={{ flexGrow: 1 }}>
+    </Box>
+    </Container>
+      </div>
     </div >
   );
 };

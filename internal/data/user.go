@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ehrktia/lendbook/internal/data/pg"
+	"codeberg.org/ehrktia/lendbook/internal/data/pg"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 )
@@ -24,7 +24,7 @@ func NewUser(connPool *pg.Postgres) UserRepo {
 var ErrDuplicate = errors.New("duplicate data found in store")
 
 func (o UserRepo) GetById(
-	ctx context.Context, id float64) (User, error) {
+	ctx context.Context, id string) (User, error) {
 	reqCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	conn, err := o.connPool.GetConn(reqCtx)
@@ -35,13 +35,16 @@ func (o UserRepo) GetById(
 		conn.Conn().Close(reqCtx)
 		conn.Release()
 	}()
-	qUserById := `select
+	q := `select
 	*
 from
-	owner_with_books owb
+	owner
 where
-	id = $1;`
-	rows, err := conn.Query(reqCtx, qUserById, id)
+	id = @id;`
+	args := pgx.NamedArgs{
+		"id": id,
+	}
+	rows, err := conn.Query(reqCtx, q, args)
 	if err != nil {
 		return User{}, errClassify(err)
 	}
@@ -52,7 +55,6 @@ where
 	if ctx.Err() != nil {
 		return owner, ctx.Err()
 	}
-
 	return owner, nil
 }
 
@@ -66,7 +68,7 @@ func (o UserRepo) GetBookByUserId(
 		conn.Conn().Close(ctx)
 		conn.Release()
 	}()
-	queryBookByUserId := `select * from books where owner_id=$1`
+	queryBookByUserId := `select * from book where owner_id=$1`
 	rows, err := conn.Query(ctx, queryBookByUserId, ownerId)
 	if err != nil {
 		switch {
@@ -89,7 +91,7 @@ func (o UserRepo) GetBookByUserId(
 }
 
 type BookList struct {
-	ID        int64  `json:"id"`
+	ID        string `json:"id"`
 	Title     string `json:"title"`
 	Author    string `json:"author"`
 	Edition   string `json:"edition"`
@@ -100,13 +102,12 @@ type BookList struct {
 }
 
 type User struct {
-	ID        int64      `json:"id"`
-	FirstName string     `json:"firstName"`
-	LastName  string     `json:"lastName"`
-	Email     string     `json:"email"`
-	Active    bool       `json:"active"`
-	Version   int32      `json:"version"`
-	Books     []BookList `json:"books"`
+	ID        string    `json:"id"`
+	FirstName string    `json:"firstName"`
+	LastName  string    `json:"lastName"`
+	Email     string    `json:"email"`
+	Added     time.Time `json:"added"`
+	Updated   time.Time `json:"updated"`
 }
 
 func (o UserRepo) GetUsers(ctx context.Context) ([]User, error) {
@@ -123,7 +124,7 @@ func (o UserRepo) GetUsers(ctx context.Context) ([]User, error) {
 	qGetUsersBooks := `select
 	*
 from
-	owner_with_books owb;`
+	owner owb;`
 	rows, err := conn.Query(reqCtx, qGetUsersBooks)
 	if err != nil {
 		return nil, errClassify(err)
@@ -141,30 +142,32 @@ from
 var ErrCreateUser = errors.New("can not create owner")
 
 func (o UserRepo) Create(
-	ctx context.Context, owner User) (int64, error) {
-	var ownerId int64
+	ctx context.Context, owner User) (string, error) {
+	var ownerId string
 	reqCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	conn, err := o.connPool.GetConn(reqCtx)
 	if err != nil {
 		return ownerId, errClassify(err)
 	}
-	qCreateUser := `INSERT INTO public."lender"
-(first_name, last_name, email, active,version)
-VALUES(@first_name, @last_name, @email, @active,@version) returning id;`
+	q := `insert
+	into
+	public."owner" (
+	first_name,
+	last_name,
+	email)
+values( @fname, @lname, @email) returning id;`
 	args := pgx.NamedArgs{
-		"first_name": owner.FirstName,
-		"last_name":  owner.LastName,
-		"email":      owner.Email,
-		"active":     owner.Active,
-		"version":    owner.Version,
+		"fname": owner.FirstName,
+		"lname": owner.LastName,
+		"email": owner.Email,
 	}
 	f := func(tx pgx.Tx) error {
-		rows, err := tx.Query(reqCtx, qCreateUser, args)
+		rows, err := tx.Query(reqCtx, q, args)
 		if err != nil {
 			return err
 		}
-		ownerId, err = pgx.CollectExactlyOneRow(rows, pgx.RowTo[int64])
+		ownerId, err = pgx.CollectExactlyOneRow(rows, pgx.RowTo[string])
 		if err != nil {
 			return err
 		}
@@ -177,7 +180,7 @@ VALUES(@first_name, @last_name, @email, @active,@version) returning id;`
 }
 
 type UserWithNoBooks struct {
-	ID        int64  `json:"id"`
+	ID        string `json:"id"`
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 	Email     string `json:"email"`
@@ -272,12 +275,12 @@ var ErrClosedTx = errors.New("tx is closed")
 var ErrTxRollBack = errors.New("tx commit rollback error")
 
 func (o UserRepo) GetUserByEmail(
-	ctx context.Context, email string) (int64, error) {
+	ctx context.Context, email string) (string, error) {
 	reqCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	conn, err := o.connPool.GetConn(reqCtx)
 	if err != nil {
-		return int64(0), err
+		return "", err
 	}
 	defer func() {
 		conn.Conn().Close(reqCtx)
@@ -290,15 +293,38 @@ func (o UserRepo) GetUserByEmail(
 	where email=@email;`
 	row, err := conn.Query(reqCtx, qGetUserByName, args)
 	if err != nil {
-		return 0, errClassify(err)
+		return "", errClassify(err)
 	}
-	id, err := pgx.CollectExactlyOneRow(row, pgx.RowTo[int64])
+	id, err := pgx.CollectExactlyOneRow(row, pgx.RowTo[string])
 	if err != nil {
-		return 0, errClassify(err)
+		return "", errClassify(err)
 	}
 	if ctx.Err() != nil {
-		return 0, ctx.Err()
+		return "", ctx.Err()
 	}
 	return id, nil
+}
 
+func (o UserRepo) DeleteByID(ctx context.Context, id string) error {
+	reqCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	conn, err := o.connPool.GetConn(reqCtx)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		conn.Conn().Close(reqCtx)
+		conn.Release()
+	}()
+	args := pgx.NamedArgs{
+		"id": id,
+	}
+	q := `delete from owner where id=@id;`
+	if _, err := conn.Query(reqCtx, q, args); err != nil {
+		return errClassify(err)
+	}
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+	return nil
 }

@@ -3,21 +3,28 @@
 package model
 
 type Book struct {
-	ID        float64 `json:"id"`
+	ID        string  `json:"id"`
 	Title     string  `json:"title"`
 	Author    string  `json:"author"`
 	Edition   string  `json:"edition"`
 	Available bool    `json:"available"`
-	OwnerID   float64 `json:"ownerId"`
+	OwnerID   string  `json:"ownerId"`
 	Added     *string `json:"added,omitempty"`
 	Updated   *string `json:"updated,omitempty"`
+}
+
+type BookList struct {
+	Data  []*Book `json:"data,omitempty"`
+	Prev  string  `json:"prev"`
+	Next  string  `json:"next"`
+	Total string  `json:"total"`
 }
 
 type Query struct {
 }
 
 type User struct {
-	ID        float64 `json:"id"`
+	ID        string  `json:"id"`
 	FirstName string  `json:"firstName"`
 	LastName  string  `json:"lastName"`
 	Email     string  `json:"email"`

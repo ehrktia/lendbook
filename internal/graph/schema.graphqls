@@ -1,7 +1,7 @@
 
 
 type User {
-  id : Float!
+  id : String!
   firstName: String!
   lastName: String!
   email: String!
@@ -11,21 +11,28 @@ type User {
 }
 
 type Book {
-  id: Float!
+  id: String!
   title: String!
   author: String!
   edition: String!
   available: Boolean!
-  ownerId: Float!
+  ownerId: String!
   added: String
   updated: String
 }
 
+type BookList {
+  data: [Book]
+  prev: String!
+  next: String!
+  total: String!
+}
+
 
 type Query {
-  books: [Book!]!
-  bookByOwnerId(id: Float!): [Book!]!
+  books(offset: String!,limit: String!): BookList!
+  bookByOwnerId(id: String!): [Book!]!
   users: [User!]!
-  userById(id: Float!): User
+  userById(id: String!): User
   userByEmail(email: String!): User
 }

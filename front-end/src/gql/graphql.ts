@@ -21,16 +21,24 @@ export type Book = {
   author: Scalars['String']['output'];
   available: Scalars['Boolean']['output'];
   edition: Scalars['String']['output'];
-  id: Scalars['Float']['output'];
-  ownerId: Scalars['Float']['output'];
+  id: Scalars['String']['output'];
+  ownerId: Scalars['String']['output'];
   title: Scalars['String']['output'];
   updated?: Maybe<Scalars['String']['output']>;
+};
+
+export type BookList = {
+  __typename?: 'BookList';
+  data?: Maybe<Array<Maybe<Book>>>;
+  next: Scalars['String']['output'];
+  prev: Scalars['String']['output'];
+  total: Scalars['String']['output'];
 };
 
 export type Query = {
   __typename?: 'Query';
   bookByOwnerId: Array<Book>;
-  books: Array<Book>;
+  books: BookList;
   userByEmail?: Maybe<User>;
   userById?: Maybe<User>;
   users: Array<User>;
@@ -38,7 +46,13 @@ export type Query = {
 
 
 export type QueryBookByOwnerIdArgs = {
-  id: Scalars['Float']['input'];
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryBooksArgs = {
+  limit: Scalars['String']['input'];
+  offset: Scalars['String']['input'];
 };
 
 
@@ -48,7 +62,7 @@ export type QueryUserByEmailArgs = {
 
 
 export type QueryUserByIdArgs = {
-  id: Scalars['Float']['input'];
+  id: Scalars['String']['input'];
 };
 
 export type User = {
@@ -57,7 +71,7 @@ export type User = {
   books?: Maybe<Array<Maybe<Book>>>;
   email: Scalars['String']['output'];
   firstName: Scalars['String']['output'];
-  id: Scalars['Float']['output'];
+  id: Scalars['String']['output'];
   lastName: Scalars['String']['output'];
   version: Scalars['Int']['output'];
 };
@@ -77,16 +91,24 @@ export type Book = {
   author: Scalars['String']['output'];
   available: Scalars['Boolean']['output'];
   edition: Scalars['String']['output'];
-  id: Scalars['Float']['output'];
-  ownerId: Scalars['Float']['output'];
+  id: Scalars['String']['output'];
+  ownerId: Scalars['String']['output'];
   title: Scalars['String']['output'];
   updated?: Maybe<Scalars['String']['output']>;
+};
+
+export type BookList = {
+  __typename?: 'BookList';
+  data?: Maybe<Array<Maybe<Book>>>;
+  next: Scalars['String']['output'];
+  prev: Scalars['String']['output'];
+  total: Scalars['String']['output'];
 };
 
 export type Query = {
   __typename?: 'Query';
   bookByOwnerId: Array<Book>;
-  books: Array<Book>;
+  books: BookList;
   userByEmail?: Maybe<User>;
   userById?: Maybe<User>;
   users: Array<User>;
@@ -94,7 +116,13 @@ export type Query = {
 
 
 export type QueryBookByOwnerIdArgs = {
-  id: Scalars['Float']['input'];
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryBooksArgs = {
+  limit: Scalars['String']['input'];
+  offset: Scalars['String']['input'];
 };
 
 
@@ -104,7 +132,7 @@ export type QueryUserByEmailArgs = {
 
 
 export type QueryUserByIdArgs = {
-  id: Scalars['Float']['input'];
+  id: Scalars['String']['input'];
 };
 
 export type User = {
@@ -113,7 +141,7 @@ export type User = {
   books?: Maybe<Array<Maybe<Book>>>;
   email: Scalars['String']['output'];
   firstName: Scalars['String']['output'];
-  id: Scalars['Float']['output'];
+  id: Scalars['String']['output'];
   lastName: Scalars['String']['output'];
   version: Scalars['Int']['output'];
 };

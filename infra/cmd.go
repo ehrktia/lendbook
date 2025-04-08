@@ -3,15 +3,16 @@ package infra
 import (
 	"context"
 	"log/slog"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"sync"
 
-	"github.com/ehrktia/lendbook/internal/app"
-	"github.com/ehrktia/lendbook/internal/data"
-	"github.com/ehrktia/lendbook/internal/data/pg"
-	"github.com/ehrktia/lendbook/internal/graph"
+	"codeberg.org/ehrktia/lendbook/internal/app"
+	"codeberg.org/ehrktia/lendbook/internal/data"
+	"codeberg.org/ehrktia/lendbook/internal/data/pg"
+	"codeberg.org/ehrktia/lendbook/internal/graph"
 )
 
 func Run(ctx context.Context, l *slog.Logger) error {
@@ -23,10 +24,12 @@ func Run(ctx context.Context, l *slog.Logger) error {
 		return err
 	}
 	userRepo := data.NewUser(postgres)
-	// bookRepo := data.NewBook(postgres)
-	userApp := app.NewUser(userRepo, l)
+	bookRepo := data.NewBook(postgres)
+	userApp := app.NewUser(userRepo, userRepo, l)
+	bookApp := app.NewBook(bookRepo, l)
 	resolver := &graph.Resolver{
 		UserService: userApp,
+		BookService: bookApp,
 	}
 	port := getGQLServerPort()
 	httpServer := initWebServer(port)
@@ -43,7 +46,6 @@ func Run(ctx context.Context, l *slog.Logger) error {
 				slog.String("error", err.Error()))
 			os.Exit(1)
 		}
-
 	}()
 	return httpServer.ListenAndServe()
 }
@@ -59,8 +61,7 @@ func getGQLServerPort() string {
 
 func initWebServer(port string) *http.Server {
 	return &http.Server{
-		Addr: "[::]:" + port,
+		Addr: net.JoinHostPort("::", port),
 	}
 
 }
-

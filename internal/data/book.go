@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ehrktia/lendbook/internal/data/pg"
+	"codeberg.org/ehrktia/lendbook/internal/data/pg"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -21,21 +21,20 @@ func NewBook(connPool *pg.Postgres) *BookRepo {
 }
 
 type Book struct {
-	ID        int64     `json:"id"`
+	ID        string    `json:"id"`
 	Title     string    `json:"title"`
 	Author    string    `json:"author"`
 	Edition   string    `json:"edition"`
 	Available bool      `json:"available"`
-	OwnerID   int64     `json:"ownerId"`
+	OwnerID   string    `json:"ownerId"`
 	Added     time.Time `json:"added"`
 	Updated   time.Time `json:"updated"`
 }
 
 var ErrNodata = fmt.Errorf("%s", "no data found")
 
-var query = `select * from books`
-
-func (b BookRepo) GetAllBooks(ctx context.Context) ([]Book, error) {
+func (b BookRepo) GetBooks(
+	ctx context.Context, of, limit int) ([]Book, error) {
 	reqCtx, cancel := context.WithTimeout(ctx, 2*time.Second)
 	defer cancel()
 	conn, err := b.connPool.GetConn(reqCtx)
@@ -46,7 +45,9 @@ func (b BookRepo) GetAllBooks(ctx context.Context) ([]Book, error) {
 		conn.Conn().Close(reqCtx)
 		conn.Release()
 	}()
-	rows, err := conn.Query(reqCtx, query)
+	var query = `select * from book offset @offset limit @limit`
+	args := pgx.NamedArgs{"offset": of, "limit": limit}
+	rows, err := conn.Query(reqCtx, query, args)
 	if err != nil {
 		switch {
 		case errors.Is(err, pgx.ErrNoRows):
@@ -62,7 +63,30 @@ func (b BookRepo) GetAllBooks(ctx context.Context) ([]Book, error) {
 	return books, nil
 }
 
-var queryBookOwnerId = `select * from books where owner_id=$1`
+func (b BookRepo) GetBookCount(ctx context.Context) (int, error) {
+	reqCtx, cancel := context.WithTimeout(ctx, 2*time.Second)
+	defer cancel()
+	conn, err := b.connPool.GetConn(reqCtx)
+	if err != nil {
+		return 0, err
+	}
+	defer func() {
+		conn.Conn().Close(reqCtx)
+		conn.Release()
+	}()
+	q := `select count(id) from book;`
+	rows, err := conn.Query(reqCtx, q)
+	if err != nil {
+		return 0, errClassify(err)
+	}
+	tot, err := pgx.CollectOneRow(rows, pgx.RowTo[int])
+	if err != nil {
+		return 0, errClassify(err)
+	}
+	return tot, nil
+}
+
+var queryBookOwnerId = `select * from book where owner_id=$1`
 
 func (b BookRepo) GetBooksByOwnerId(
 	ctx context.Context, ownerId float64) ([]Book, error) {

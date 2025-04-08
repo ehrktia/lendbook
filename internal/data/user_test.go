@@ -11,12 +11,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ehrktia/lendbook/internal/data/pg"
+	"codeberg.org/ehrktia/lendbook/internal/data/pg"
 )
 
 var ctx = context.Background()
 var once = &sync.Once{}
-var lenderId int64
+var lenderId string
 var pool *pg.Postgres
 
 func TestMain(m *testing.M) {
@@ -35,19 +35,25 @@ func TestUserById(t *testing.T) {
 	tCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 	lender := NewUser(pool)
-	o, err := lender.GetById(tCtx, float64(lenderId))
+	id, err := lender.Create(ctx, User{
+		FirstName: t.Name(),
+		LastName:  t.Name(),
+		Email:     "first.last@domain.com",
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if o.ID != lenderId {
-		t.Fatalf("expected:%d,got:%d", lenderId, o.ID)
+	o, err := lender.GetById(tCtx, id)
+	if err != nil {
+		t.Fatal(err)
 	}
-	if len(o.Books) < 1 {
-		t.Fatalf("expected one book,got:%#v\n", o.Books)
+	if id != o.ID {
+		t.Fatalf("expected:%s\tgot:%s\n", id, o.ID)
+
 	}
 }
 
-var queryInsBook = `INSERT INTO public.books(
+var queryInsBook = `INSERT INTO public.book(
  title, author, edition, owner_id, available, added, updated)
 	VALUES ( 'book-1', 'author-1', '1', $1, TRUE, now(), now());`
 
@@ -88,9 +94,6 @@ func setupTestData() error {
 	}
 
 	_ = conn.QueryRow(ctx, queryUserByfirst).Scan(&lenderId)
-	if lenderId < 1 {
-		panic("error user setup failed")
-	}
 
 	tx, err = conn.Begin(ctx)
 	if err != nil {
@@ -122,12 +125,12 @@ func TestCreateUser(t *testing.T) {
 	got, err := lender.Create(tCtx,
 		User{
 			FirstName: t.Name(), LastName: t.Name(),
-			Email: t.Name(), Active: true})
+			Email: t.Name()})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got < 1 {
-		t.Fatalf("expected valid id,got:%d", got)
+	if got == "" {
+		t.Fatalf("expected valid uuid\tgot:%s\n", got)
 	}
 
 }
@@ -201,7 +204,7 @@ func cleanUp() error {
 	if _, err := tx.Exec(ctx, `truncate table public.lender cascade;`); err != nil {
 		return err
 	}
-	if _, err := tx.Exec(ctx, `truncate table public.books cascade`); err != nil {
+	if _, err := tx.Exec(ctx, `truncate table public.book cascade`); err != nil {
 		return err
 	}
 	if err := tx.Commit(ctx); err != nil {
@@ -209,4 +212,17 @@ func cleanUp() error {
 	}
 	return nil
 
+}
+
+func TestBookTotal(t *testing.T) {
+	tCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	book := NewBook(pool)
+	tot, err := book.GetTotal(tCtx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if tot < 1 {
+		t.Fatalf("expected:%d\tgot:%d\n", 1, tot)
+	}
 }

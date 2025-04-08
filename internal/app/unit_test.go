@@ -3,34 +3,33 @@ package app
 import (
 	"context"
 	"errors"
-	"log/slog"
+	"strings"
 	"testing"
 
-	"github.com/ehrktia/lendbook/internal/data"
-	"github.com/ehrktia/lendbook/mocks"
+	"codeberg.org/ehrktia/lendbook/internal/data"
+	"codeberg.org/ehrktia/lendbook/mocks"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
-var ctx, cancel = context.WithCancel(context.Background())
-var l = slog.Default()
-
 func TestGetUserByEmailError(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
 	tests := []struct {
 		name   string
 		email  string
 		ctxErr bool
 		err    error
-		expect func() *mocks.UserFetcher
+		expect func() *mocks.UserQuery
 	}{
 		{
 			name:  "no data error",
 			email: "first.last@email.com",
 			err:   data.ErrNodata,
-			expect: func() *mocks.UserFetcher {
-				mockUserDataStore := mocks.NewUserFetcher(t)
+			expect: func() *mocks.UserQuery {
+				mockUserDataStore := mocks.NewUserQuery(t)
 				mockUserDataStore.
 					EXPECT().
 					GetUserByEmail(ctx, "first.last@email.com").
-					Return(int64(0), data.ErrNodata)
+					Return("", data.ErrNodata)
 				return mockUserDataStore
 			},
 		},
@@ -39,35 +38,50 @@ func TestGetUserByEmailError(t *testing.T) {
 			ctxErr: true,
 			email:  "first.last@email.com",
 			err:    ctx.Err(),
-			expect: func() *mocks.UserFetcher {
+			expect: func() *mocks.UserQuery {
 				cancel()
-				mockUserDataStore := mocks.NewUserFetcher(t)
+				mockUserDataStore := mocks.NewUserQuery(t)
 				mockUserDataStore.
 					EXPECT().GetUserByEmail(ctx, "first.last@email.com").
-					Return(int64(0), ctx.Err())
+					Return("", ctx.Err())
+				return mockUserDataStore
+			},
+		},
+		{
+			name:  "pg error",
+			email: "first.last@email.com",
+			err:   &pgconn.PgError{Code: t.Name(), Message: t.Name()},
+			expect: func() *mocks.UserQuery {
+				cancel()
+				mockUserDataStore := mocks.NewUserQuery(t)
+				mockUserDataStore.
+					EXPECT().GetUserByEmail(ctx, "first.last@email.com").
+					Return("",
+						&pgconn.PgError{Code: t.Name(), Message: t.Name()})
 				return mockUserDataStore
 			},
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			mockUserDataStore := test.expect()
-			u := NewUser(mockUserDataStore, l)
+			mocksQuerier := test.expect()
+			mocksCommand := mocks.NewCommander(t)
+			u := NewUser(mocksCommand, mocksQuerier, l)
 			_, err := u.GetUserByEmail(ctx, test.email)
-			if !mockUserDataStore.AssertExpectations(t) {
+			if !mocksQuerier.AssertExpectations(t) {
 				t.Fatal("expected calls not made")
 			}
 			if err == nil {
 				t.Fatalf("expected:%v,got:%v\n", ctx.Err(), err)
 			}
-			if test.ctxErr {
+			switch {
+			case test.ctxErr:
 				if !errors.Is(err, ctx.Err()) {
 					t.Fatalf("expected:%v,got:%v\n", ctx.Err(), err)
 				}
-
-			} else {
-				if !errors.Is(err, test.err) {
-					t.Fatalf("expected:%v,got:%v\n", test.err, err)
+			default:
+				if !strings.EqualFold(err.Error(), test.err.Error()) {
+					t.Fatalf("expected-%v,got-%v\n", test.err, err)
 				}
 			}
 
