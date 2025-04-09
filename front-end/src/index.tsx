@@ -1,5 +1,3 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
 import './index.css';
 import OAuthSignInPage from './signin';
 import reportWebVitals from './reportWebVitals';
@@ -7,11 +5,19 @@ import { BrowserRouter, Route, Routes } from 'react-router';
 import App from './App';
 import Lender from './lender';
 import Logout from './logout';
+import { createRoot } from 'react-dom/client';
+import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
 
-const root = ReactDOM.createRoot(
+const apolloClient = new ApolloClient({
+  uri:"http://localhost:8080/query",
+  cache: new InMemoryCache(),
+  })
+const root = createRoot(
   document.getElementById('root') as HTMLElement
 );
+
 root.render(
+  <ApolloProvider client={apolloClient}>
   <BrowserRouter>
     <Routes>
       <Route path='/' element={<App />} />
@@ -20,6 +26,7 @@ root.render(
       <Route path="/logout" element= {<Logout />} />
     </Routes>
   </BrowserRouter>
+  </ApolloProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

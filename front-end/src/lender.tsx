@@ -1,108 +1,111 @@
-import { Container, Box } from "@mui/material";
-import { styled } from '@mui/material/styles';
-import Paper from '@mui/material/Paper';
-import { data, NavLink } from "react-router";
-import Grid from '@mui/material/Grid2';
-// import Card from '@mui/material/Card';
-// import CardContent from '@mui/material/CardContent';
-// import CardMedia from '@mui/material/CardMedia';
-// import Typography from '@mui/material/Typography';
-// import CardActions from "@mui/material/CardActions";
-// import Button from "@mui/material/Button";
-import axios from "axios"; 
-import * as gqlType from "./gql/graphql"
-// import createHttpError from "http-errors";
-
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: '#fff',
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: 'center',
-  color: theme.palette.text.secondary,
-  ...theme.applyStyles('dark', {
-    backgroundColor: '#1A2027',
-  }),
-}));
-
-const backgroundURL = "http://localhost:8080/query";
+import { useQuery } from "@apollo/client"
+import {loadErrorMessages} from "@apollo/client/dev"
+import { gql } from "@apollo/client";
 
 
-async function getBooks(){
-  return axios({url:backgroundURL,
-    method:'POST',
-  data:{
-    query: `{
-          books(offset: "0", limit: "15") {
-            data {
-              title
-              author
-            }
-            prev
-            next
-            total
-          }
-        }`
-      }})
-}
-
-function extractJSON(r :any) {
-  const jsonResult :any= JSON.stringify(r)
-  return JSON.parse(jsonResult);
-}
-
-function getBookList(jsonData :any) :any{
-  const bookList :any=jsonData.data.data.books.data as gqlType.BookList
-  const totBooks :bigint=bookList.length
-  const prev :bigint=  jsonData.data.data.books.prev
-  const next :bigint=  jsonData.data.data.books.next
-  const total :bigint = jsonData.data.data.books.total
-  return {
-    books: bookList,
-    len: totBooks,
-    prev: prev,
-    next: next,
-    total:total,
+const GET_BOOK_LIST = gql(/* GraphQL */`
+  query GetBookList($limit :String!,$offset :String!){
+  books(limit: $limit,offset: $offset){
+  data{
+    id
+    title
+    author
   }
-}
+    prev
+    next
+    total
+  }
+  }`);
 
-export default function Lender() {
-    getBooks().then(response=>{
-    const jsonValue = extractJSON(response)
-    const books = getBookList(jsonValue)
-      console.log("data list:",books)
-        })
-      // const response = await getBooks()
-    //   response.catch(error=>error)
-    //   const dataList = response.then(data=>{
-    //     const jsonData = extractJSON(data)
-    //     const dataValues = getBookList(jsonData)
-    //     console.log(dataValues.books)
-    //           })
-    // console.log("datalist:",dataList)
-  return (
-    <div className="lender">
-      <Container>
-        <Box sx={{ flexGrow: 1 }}>
-          <Grid container spacing={4}>
-            <Grid size={8}></Grid>
-            <Grid size={4}>
-              <Item>
-                <ul>
-                  <p> profile: first.last@email.com</p>
-                  <NavLink to={"/logout"}> logout</NavLink>
-                </ul>
-              </Item>
-            </Grid>
-          </Grid>
-        </Box>
-      </Container>
-    <div className = "bookList">
-      <Container>
-    <Box sx={{ flexGrow: 1 }}>
-    </Box>
-    </Container>
-      </div>
-    </div >
-  );
+
+
+export default function GetBooks(){
+        const {loading,data,error} = useQuery(
+        GET_BOOK_LIST,{variables:{limit:"5",offset:"0"}});
+      loadErrorMessages()
+      if (error){return <h1>error</h1>};
+      if (loading){return <h3>loading...</h3>}
+      return(
+        <div>
+            <ul>
+              // TODO: insert card and display
+                {data.books.data.map((book :any) =>
+                  <li key={book.id}>
+                    title: {book.title}
+                    author: {book.author}
+                    </li>
+                )}
+            </ul>
+        </div>
+      )
+
+  
 };
 
+// export default function BasicMenu() {
+//   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+//   const open = Boolean(anchorEl);
+//   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+//     setAnchorEl(event.currentTarget);
+//   };
+//   const handleClose = () => {
+//     setAnchorEl(null);
+//   };
+// const availableClick = ( event: React.MouseEvent<HTMLButtonElement>)=>{
+//   console.log("event:",event.button)
+//         const {loading,data} = useQuery(
+//         GET_BOOK_LIST,{variables:{limit:"5",offset:"0"}});
+//       return(
+//         <div>
+//           {loading ? (<p>loading...</p>):(
+//             <p>{data}</p>
+//             )}
+//         </div>
+// )};  
+
+//   return (
+//     <div>
+//   <Container>
+//     <Box sx={{ flexGrow: 1 }}>
+//       <Grid2 container spacing={4}>
+//         <Grid2 size={8}></Grid2>
+//         <Grid2 size={4}>
+//           <Item>
+//             <ul>
+//       <p><Button
+//         id="basic-button"
+//         aria-controls={open ? 'basic-menu' : undefined}
+//         aria-haspopup="true"
+//         aria-expanded={open ? 'true' : undefined}
+//         onClick={handleClick}
+//       >
+//         Profile
+//       </Button></p>
+//       <Menu
+//         id="basic-menu"
+//         anchorEl={anchorEl}
+//         open={open}
+//         onClose={handleClose}
+//         MenuListProps={{
+//           'aria-labelledby': 'basic-button',
+//         }}
+//       >
+//         <MenuItem onClick={handleClose}>My account</MenuItem>
+//         <MenuItem onClick={handleClose}>Logout</MenuItem>
+//       </Menu>
+//     </ul>
+//   </Item>
+// </Grid2>
+// </Grid2>
+// <Stack direction="row" spacing={2}>
+//       <Button
+//         id="available"
+//         onClick={availableClick}>Available</Button>
+//       <Button id="lended">Lended</Button>
+//       <Button id="dueSoon">Due soon</Button>
+//       </Stack>
+// </Box>
+// </Container>
+// </div>
+//   );
+// }
